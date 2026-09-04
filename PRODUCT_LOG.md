@@ -126,17 +126,12 @@ The service worker does not cache `config.js`. Authentication and Supabase data 
 - Bumped the service-worker cache version to avoid stale shell HTML after deployment.
 - Manifest app name is now lowercase `potluck`.
 
-## Sep 3, 2026 — V1.4: Google-first authentication
+## Sep 3, 2026 — V1.4.1: Google authentication fix
 
-### Problem
-The built-in Supabase email sender rate limit made magic-link-only authentication unsuitable for an immediate multi-user beta.
+The previous V1.4 package did not actually replace the authentication markup. This build fixes that packaging error.
 
-### Decision
-Use Google OAuth as the primary sign-in path and retain email magic links only as a fallback.
-
-### Changes
-- `Continue with Google` is now the first authentication action.
-- OAuth redirects preserve the current query string, including invite links.
-- Magic-link login remains available below an `or` divider.
-- Successful magic-link requests now enforce a 60-second UI cooldown.
-- No database schema change.
+- Google OAuth button is present in the login screen.
+- Google OAuth is wired to Supabase `signInWithOAuth`.
+- Invite query parameters are preserved through OAuth redirect.
+- Magic-link login remains as fallback with a 60-second cooldown.
+- Service-worker cache version bumped to force the new shell.
