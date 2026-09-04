@@ -117,3 +117,26 @@ The service worker does not cache `config.js`. Authentication and Supabase data 
 - Removed the symbol-style app icon.
 - Home-screen icons now use only the lowercase `potluck` wordmark in Pretendard.
 - Bundled Pretendard Variable locally so the web wordmark and app icon use the same type family.
+
+## Sep 3, 2026 — V1.3.2: PWA visibility fix
+
+- Fixed remaining uppercase `Potluck` wordmarks in the live UI.
+- Moved the install affordance above the Spaces grid so it is visible without scrolling.
+- iPhone install guidance now distinguishes Safari from in-app browsers.
+- Bumped the service-worker cache version to avoid stale shell HTML after deployment.
+- Manifest app name is now lowercase `potluck`.
+
+## Sep 3, 2026 — V1.4: Google-first authentication
+
+### Problem
+The built-in Supabase email sender rate limit made magic-link-only authentication unsuitable for an immediate multi-user beta.
+
+### Decision
+Use Google OAuth as the primary sign-in path and retain email magic links only as a fallback.
+
+### Changes
+- `Continue with Google` is now the first authentication action.
+- OAuth redirects preserve the current query string, including invite links.
+- Magic-link login remains available below an `or` divider.
+- Successful magic-link requests now enforce a 60-second UI cooldown.
+- No database schema change.

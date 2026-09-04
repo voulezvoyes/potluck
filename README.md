@@ -81,3 +81,13 @@ iPhone: open in Safari → Share → Add to Home Screen.
 Android/Chromium: use the in-product Install control when the browser exposes installation.
 
 Do not overwrite your production `config.js`.
+
+## V1.4 Google authentication
+
+Google OAuth is the primary sign-in method. Email magic links remain available as a fallback.
+
+Required Supabase setup:
+- Google provider enabled
+- Google OAuth Client ID and Client Secret configured
+- Supabase OAuth callback URL registered in Google Cloud
+- Site URL set to the production Potluck URL
