@@ -64,3 +64,20 @@ The space overview now adapts to member count and mobile width:
 - mobile: one full-width column
 
 The overview surfaces only populated entry categories.
+
+
+## V1.3 PWA
+
+Potluck can now be installed to a phone home screen.
+
+New files:
+- `manifest.webmanifest`
+- `service-worker.js`
+- `icon-192.png`
+- `icon-512.png`
+- `apple-touch-icon.png`
+
+iPhone: open in Safari → Share → Add to Home Screen.
+Android/Chromium: use the in-product Install control when the browser exposes installation.
+
+Do not overwrite your production `config.js`.
