@@ -1,20 +1,15 @@
-# Potluck — V0.5
+# Potluck — V0.6
 
-A private shared weekly trace for small friend groups.
+A lightweight shared weekly log for small private groups.
 
-## Core flow
-Group overview → Person × Week → Trace → Conversation
+Open `index.html` or deploy the repository directly to Vercel.
 
-## V0.5 changes
-- Reduced home density to one representative trace per person.
-- Replaced the oversized editorial hero with a compact “Our week” heading.
-- Added a narrower centered app shell with more desktop side padding.
-- Removed spreadsheet-like vertical borders from the group overview.
-- Standardized typography, line-height, spacing, and modal rhythm.
-- Added mock multi-space switching.
-- Added mock Profile and Space Settings screens.
-- Added mock member management and invite affordances.
-- Preserved the person-level Made / Learned / Thought / Stuck matrix for comparison.
+## V0.6 prototype
+- Space switcher only switches/creates spaces.
+- Profile is global and lives behind the avatar.
+- Space actions are contextual (`•••`) instead of a settings center.
+- Person-week view uses flexible vertical categories instead of a rigid 2×2 matrix.
+- Trace detail and lightweight replies remain.
+- “Bring something” always posts into the active space.
 
-## Still intentionally missing
-No backend, auth, persistence, real invitations, or AI yet.
+This is still a frontend mock. Data resets on refresh; no auth, database, or real invite behavior is connected yet.

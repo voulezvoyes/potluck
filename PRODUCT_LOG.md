@@ -92,3 +92,29 @@ Pretendard remains the primary interface and reading typeface. ChosunIlbo Myungj
 - Should the featured trace be newest, manually selected, or system-selected?
 - Does the person matrix earn its extra navigation step?
 - Do users treat different spaces as meaningfully different contexts?
+
+
+## Sep 3, 2026 — V0.6: controls belong to their context
+
+V0.5 introduced a generic settings center that combined account-level profile controls with space-level controls. In use, this created an unnecessary layer and blurred which object each setting belonged to.
+
+**Decision:** remove the shared settings center.
+
+Revised ownership:
+- Profile is global to the account and is accessed from the user avatar.
+- Space switching is limited to switching spaces and creating a new space.
+- Space actions stay attached to the active space through a lightweight contextual menu.
+- Capture remains context-aware: a new trace is always added to the currently active space.
+
+The main navigation model is now:
+- Group = glimpse
+- Person × Week = understand
+- Trace = discuss
+
+The person-level 2×2 matrix was also removed. It imposed a fixed visual structure on uneven weekly content, producing oversized empty regions when a category contained little or nothing. V0.6 keeps the same information architecture but renders Made / Learned / Thought / Stuck as vertical sections that expand naturally with content.
+
+Still unvalidated:
+- Whether the person layer earns its navigation step in real group use.
+- Whether one representative trace per person creates enough curiosity to open a week.
+- Whether the four entry types are useful structure or eventually become posting friction.
+- Whether contextual space actions remain discoverable without becoming persistent navigation.
