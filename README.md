@@ -46,3 +46,10 @@ Inside a space:
 `Our week → Person → Entry → Replies`
 
 The interface avoids feeds, likes, streaks, and activity notifications.
+
+
+## V1.1 first-use flow
+
+Invite link → email authentication → automatic space join → one-screen onboarding → first entry → weekly space.
+
+This update does not change the Supabase schema.

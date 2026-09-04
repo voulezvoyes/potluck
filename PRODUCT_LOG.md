@@ -50,3 +50,18 @@ Also excluded:
 - push notifications
 
 These exclusions preserve Potluck's original product thesis: a private reciprocal exchange, not another engagement feed.
+
+
+## Sep 3, 2026 — V1.1: first-use UX
+
+Real authentication and persistence exposed a new problem: the creator understood the product model, but a first-time user did not know what action to take or what the four entry types meant.
+
+### Changes
+- Invite links now attempt to join the target space automatically after authentication.
+- First entry into a space shows one lightweight onboarding screen.
+- Made / Learned / Thought / Stuck each receive one-sentence explanations.
+- Completely empty weeks show a direct first-entry CTA.
+- Onboarding is remembered per user × space in the browser and does not become persistent tutorial chrome.
+
+### Principle
+Explain only where uncertainty is highest: joining, first entry, and an empty space.
