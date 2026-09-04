@@ -53,3 +53,14 @@ The interface avoids feeds, likes, streaks, and activity notifications.
 Invite link → email authentication → automatic space join → one-screen onboarding → first entry → weekly space.
 
 This update does not change the Supabase schema.
+
+
+## V1.2 responsive week
+
+The space overview now adapts to member count and mobile width:
+- 1 person: wide editorial block
+- 2 people: two columns
+- 3+ people: adaptive grid
+- mobile: one full-width column
+
+The overview surfaces only populated entry categories.

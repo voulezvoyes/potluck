@@ -65,3 +65,27 @@ Real authentication and persistence exposed a new problem: the creator understoo
 
 ### Principle
 Explain only where uncertainty is highest: joining, first entry, and an empty space.
+
+
+## Sep 3, 2026 — V1.2: adaptive weekly view
+
+### Problem
+The weekly view visually assumed a six-person group. With one or two members, content occupied only a small part of the canvas; on mobile, desktop card widths created narrow text columns and poor readability.
+
+The overview also surfaced only one entry per person, weakening the product's Made / Learned / Thought / Stuck model.
+
+### Decision
+Make the weekly overview responsive to group size and content density.
+
+### Changes
+- 1 member: wide editorial layout with a constrained reading width.
+- 2 members: two-column layout.
+- 3+ members: adaptive grid.
+- Mobile: always one full-width vertical column.
+- Each person preview can surface one entry per populated category.
+- Empty categories are hidden in the group overview.
+- Personal week pages remain the detailed view.
+- Mobile primary capture control keeps an explicit `+ Add` label instead of becoming a symbol-only button.
+
+### Product principle
+Potluck is designed primarily for small groups. The interface should look strongest at the moment a group has only one or two active members, not only when all six slots are full.
