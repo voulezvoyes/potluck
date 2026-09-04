@@ -46,3 +46,49 @@ The deployed V0.3 read too strongly as an editorial archive. V0.4 uses **Pretend
 The 3×2 group overview and person-level information architecture remain unchanged so the next test isolates visual-language changes rather than changing structure at the same time.
 
 Still unvalidated: whether the overview creates curiosity, whether the person layer earns its navigation step, and whether “Bring something” is clear without overextending the Potluck metaphor.
+
+
+## Sep 3, 2026 — V0.5: from concept screen to app shell
+
+### Home density
+V0.4 exposed multiple entries per member and effectively summarized each person before they were opened. This increased scanning cost and weakened the role of the person-level view.
+
+**Decision:** surface one representative trace per member plus lightweight category hints.
+
+Updated hierarchy:
+- Group = glimpse
+- Person × Week = understand
+- Trace = discuss
+
+### Visual hierarchy
+The large “What has everyone been up to?” headline visually overpowered the Potluck brand and made the home screen read like an editorial landing page.
+
+**Decision:** replace it with a smaller “Our week” heading and preserve the serif treatment only as a restrained editorial cue.
+
+### Alignment
+Different entry lengths caused Made / Learned / Thought sections to misalign across member cards. Rather than forcing equal row heights or truncating multiple entries, V0.5 removes multiple category rows from the home view entirely.
+
+### Spatial layout
+Desktop content is constrained to a narrower centered shell with stronger side padding. The member grid keeps equal spatial presence but removes most vertical borders, using whitespace and a single row divider instead.
+
+### App shell
+The concept requires one user to participate in multiple private groups, but V0.4 only represented one group.
+
+V0.5 adds mock:
+- space switcher
+- multiple spaces
+- profile settings
+- group settings
+- member list
+- invite affordance
+
+No backend behavior is implied yet.
+
+### Typography and rhythm
+Pretendard remains the primary interface and reading typeface. ChosunIlbo Myungjo is limited to top-level editorial headings. Detail, capture, comments, and settings now share a more consistent line-height and spacing system.
+
+### Open questions
+- Is one representative trace enough to create curiosity?
+- Should the featured trace be newest, manually selected, or system-selected?
+- Does the person matrix earn its extra navigation step?
+- Do users treat different spaces as meaningfully different contexts?
