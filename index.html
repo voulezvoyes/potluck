@@ -1,147 +1,80 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Potluck — Shared Weekly Trace</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Potluck</title>
 <style>
-@font-face{font-family:'Pretendard';src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');font-weight:400;font-display:swap}
-@font-face{font-family:'Pretendard';src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');font-weight:600;font-display:swap}
-@font-face{font-family:'ChosunIlboMyungjo';src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');font-weight:400;font-display:swap}
-:root{--bg:#f7f7f4;--surface:#fff;--ink:#171717;--muted:#77736d;--line:#deddd8;--soft:#efeee9;--accent:#c95f43;--max:1080px}
-*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink)}
-body,button,input,textarea{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-button,input,textarea{font:inherit;color:inherit} button{cursor:pointer}
-.app{width:min(var(--max),calc(100% - 96px));margin:0 auto;padding:26px 0 80px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:58px}
-.brand{font-weight:600;font-size:22px;letter-spacing:-.025em;background:none;border:0;padding:0}
-.nav-actions{display:flex;gap:9px;align-items:center}
-.btn,.chip,.icon-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 14px}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.icon-btn{width:40px;height:40px;padding:0;display:grid;place-items:center;font-weight:600}
-.avatar-btn{width:40px;height:40px;border:1px solid var(--line);background:var(--surface);border-radius:50%;display:grid;place-items:center;font-weight:600}
-.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.small,.muted{font-size:12px;color:var(--muted)} .screen{display:none}.screen.active{display:block}
-.week-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:24px}
-.week-title h1{font-family:'ChosunIlboMyungjo',serif;font-size:40px;font-weight:400;line-height:1.1;letter-spacing:-.02em;margin:5px 0 0}
-.week-sub{font-size:14px;color:var(--muted);max-width:420px;line-height:1.55}
-.member-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:34px}
-.member{position:relative;text-align:left;border:0;background:transparent;padding:24px 0 28px;border-bottom:1px solid var(--line);min-width:0}
-.member:hover .member-name{text-decoration:underline;text-underline-offset:3px}
-.member-name{font-size:20px;font-weight:600;letter-spacing:-.015em;margin-bottom:20px}
-.member-trace{min-height:108px}.trace-type{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
-.trace-copy{font-size:17px;line-height:1.48;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.trace-hint{margin-top:14px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.back{border:0;background:none;padding:0;margin:0 0 28px;color:var(--muted)}
-.person-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}
-.person-id{display:flex;gap:12px;align-items:center}.avatar{width:34px;height:34px;border:1px solid var(--line);background:var(--surface);border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:12px}
-.person-name{font-family:'ChosunIlboMyungjo',serif;font-size:34px;line-height:1;margin:0}
-.person-note{font-size:14px;line-height:1.55;color:var(--muted);max-width:420px}
-.category-list{border-top:1px solid var(--line)}
-.category{display:grid;grid-template-columns:150px 1fr;gap:28px;padding:24px 0;border-bottom:1px solid var(--line)}
-.category-label{display:flex;justify-content:space-between;gap:12px;padding-top:2px}
-.category-items{display:grid}.trace-row{border:0;background:transparent;text-align:left;padding:12px 0;border-top:1px solid var(--line);font-size:17px;line-height:1.52;letter-spacing:-.01em}
-.trace-row:first-child{border-top:0;padding-top:0}.empty{font-size:13px;color:var(--muted);line-height:1.5}
-.detail{max-width:760px;margin:0 auto}.detail-meta{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
-.detail-copy{font-size:28px;line-height:1.5;letter-spacing:-.018em;margin:18px 0 34px}.comments{border-top:1px solid var(--line);padding-top:22px}
-.comments h3{font-size:15px;margin:0 0 14px}.comment{padding:13px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.55}.comment:first-child{border-top:0}
-.reply{display:flex;gap:10px;margin-top:16px}.reply textarea{flex:1;min-height:72px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:13px 14px;resize:vertical;line-height:1.55}
-.overlay,.sheet{position:fixed;inset:0;display:none;background:rgba(20,20,18,.22);z-index:10}.overlay{place-items:center;padding:20px}.overlay.show{display:grid}.sheet.show{display:block}
-.modal{width:min(560px,100%);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px}
-.modal h2{font-family:'ChosunIlboMyungjo',serif;font-size:29px;font-weight:400;line-height:1.15;margin:4px 0 18px}
-.types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.types button.active{background:var(--ink);border-color:var(--ink);color:#fff}
-.modal textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:12px;padding:14px;resize:vertical;line-height:1.58;font-size:15px}
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-.panel{position:absolute;right:max(24px,calc((100vw - var(--max))/2));top:78px;width:min(340px,calc(100% - 48px));background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 12px 36px rgba(0,0,0,.08)}
-.panel-title{padding:9px 10px 7px;font-size:12px;color:var(--muted)}.space-item,.menu-item{width:100%;text-align:left;border:0;background:transparent;border-radius:10px;padding:11px 10px;display:flex;justify-content:space-between;gap:10px}
-.space-item:hover,.menu-item:hover{background:var(--soft)}.space-item.active{background:var(--soft)}.panel-sep{height:1px;background:var(--line);margin:7px 0}
-.profile-page{max-width:680px;margin:0 auto}.profile-page h2{font-family:'ChosunIlboMyungjo',serif;font-size:34px;font-weight:400;margin:0 0 8px}
-.section{padding:26px 0;border-top:1px solid var(--line)}.field{display:grid;gap:8px;margin-bottom:18px}.field label{font-size:12px;color:var(--muted)}
-.field input{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 13px;width:100%}
-.action-list{display:grid}.action{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;border:0;border-top:1px solid var(--line);background:transparent;padding:14px 4px}
-.action:first-child{border-top:0}.danger{color:#a13c2d}
-@media(max-width:900px){.app{width:min(100% - 40px,var(--max))}.member-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:22px}.topbar{margin-bottom:40px}.week-head{align-items:flex-start;flex-direction:column}.panel{right:20px}}
-@media(max-width:620px){.app{width:min(100% - 28px,var(--max));padding-top:18px}.topbar{margin-bottom:32px}.brand{font-size:19px}.nav-actions{gap:6px}.nav-actions .btn:first-child{max-width:132px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.btn{padding:9px 11px}.btn.primary{font-size:0}.btn.primary::after{content:'+';font-size:20px;line-height:1}.week-title h1{font-size:34px}.member-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px}.member{padding:20px 0 24px}.member-name{font-size:17px;margin-bottom:15px}.member-trace{min-height:112px}.trace-copy{font-size:14px;line-height:1.5}.trace-hint{font-size:11px}.person-head{align-items:flex-start;flex-direction:column}.person-name{font-size:30px}.category{grid-template-columns:1fr;gap:12px;padding:20px 0}.category-label{justify-content:flex-start}.detail-copy{font-size:22px}.reply{flex-direction:column}.reply .btn{align-self:flex-end}.avatar-btn{width:38px;height:38px}}
+@font-face{font-family:Pretendard;src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');font-weight:400;font-display:swap}
+@font-face{font-family:Pretendard;src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');font-weight:600;font-display:swap}
+@font-face{font-family:Chosun;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');font-display:swap}
+:root{--bg:#f7f7f4;--paper:#fff;--ink:#171717;--muted:#77736d;--line:#deddd8;--soft:#efeee9;--accent:#c95f43;--max:1080px}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink)}body,button,input,textarea{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input,textarea{font:inherit;color:inherit}button{cursor:pointer}
+.app{width:min(var(--max),calc(100% - 96px));margin:auto;padding:26px 0 80px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:56px}.brand{font-size:22px;font-weight:600;border:0;background:none;padding:0}.actions{display:flex;gap:8px;align-items:center}.icon,.pill,.primary{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:10px 14px}.icon{width:40px;height:40px;padding:0;display:grid;place-items:center;position:relative}.primary{background:var(--accent);border-color:var(--accent);color:#fff}.badge{position:absolute;right:-2px;top:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:20px;background:var(--accent);color:white;font-size:10px;display:grid;place-items:center}
+.screen{display:none}.screen.active{display:block}.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.muted,.small{color:var(--muted);font-size:12px}.title{font-family:Chosun,serif;font-weight:400;font-size:40px;line-height:1.1;letter-spacing:-.02em;margin:6px 0}.head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.sub{max-width:430px;color:var(--muted);font-size:14px;line-height:1.55}
+.space-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.space-card{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:20px;text-align:left;min-height:180px;display:flex;flex-direction:column}.space-name{font-size:19px;font-weight:600}.members{font-size:12px;color:var(--muted);margin:7px 0 24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.space-preview{font-size:15px;line-height:1.48;margin-top:auto;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.space-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.unread{color:var(--accent);font-weight:600}
+.week-grid{display:grid;grid-template-columns:repeat(3,1fr);column-gap:34px}.person{border:0;background:transparent;text-align:left;padding:24px 0 28px;border-bottom:1px solid var(--line)}.person-name{font-size:20px;font-weight:600;margin-bottom:18px}.trace-type{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}.trace{font-size:17px;line-height:1.48;min-height:76px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.trace-foot{font-size:12px;color:var(--muted);margin-top:12px}
+.back{border:0;background:none;padding:0;margin:0 0 28px;color:var(--muted)}.category{display:grid;grid-template-columns:145px 1fr;gap:28px;padding:24px 0;border-top:1px solid var(--line)}.row{width:100%;border:0;background:none;text-align:left;padding:12px 0;border-top:1px solid var(--line);font-size:17px;line-height:1.52}.row:first-child{border-top:0;padding-top:0}.rowmeta{font-size:11px;color:var(--muted);margin-top:5px}.detail{max-width:760px;margin:auto}.detailcopy{font-size:28px;line-height:1.5;letter-spacing:-.018em;margin:18px 0 34px}.comments{border-top:1px solid var(--line);padding-top:22px}.comment{padding:13px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.55}.reply{display:flex;gap:10px;margin-top:16px}.reply textarea,.modal textarea{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:13px 14px;line-height:1.55;resize:vertical}.reply textarea{flex:1;min-height:72px}
+.inbox-list{max-width:760px}.notice{width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;padding:18px 0;display:grid;grid-template-columns:10px 1fr auto;gap:14px}.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);margin-top:7px}.notice-title{font-size:15px;line-height:1.45}.notice-preview{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.45}.notice-time{font-size:11px;color:var(--muted)}
+.profile{max-width:680px;margin:auto}.field{display:grid;gap:7px;margin:20px 0}.field label{font-size:12px;color:var(--muted)}.field input{padding:12px;border:1px solid var(--line);background:var(--paper);border-radius:10px}.lang{display:flex;gap:8px}.lang button.active{background:var(--ink);color:white;border-color:var(--ink)}
+.overlay,.sheet{position:fixed;inset:0;display:none;background:rgba(20,20,18,.22);z-index:20}.overlay{place-items:center;padding:20px}.show{display:grid}.sheet.show{display:block}.modal{width:min(560px,100%);background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px}.modal h2{font-family:Chosun,serif;font-size:29px;font-weight:400;margin:4px 0 18px}.modal textarea{width:100%;min-height:145px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.types button.active{background:var(--ink);color:white;border-color:var(--ink)}
+.panel{position:absolute;right:max(24px,calc((100vw - var(--max))/2));top:78px;width:min(340px,calc(100% - 48px));background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 12px 36px #0001}.menu{width:100%;border:0;background:none;border-radius:9px;padding:11px 10px;text-align:left;display:flex;justify-content:space-between}.menu:hover{background:var(--soft)}.sep{height:1px;background:var(--line);margin:7px 0}.privacy{margin-top:36px;padding:18px 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.55}
+@media(max-width:900px){.app{width:calc(100% - 40px)}.space-grid,.week-grid{grid-template-columns:repeat(2,1fr)}.head{align-items:flex-start;flex-direction:column}.panel{right:20px}}
+@media(max-width:620px){.app{width:calc(100% - 28px);padding-top:18px}.top{margin-bottom:34px}.brand{font-size:19px}.actions{gap:5px}.space-grid{grid-template-columns:1fr}.week-grid{grid-template-columns:repeat(2,1fr);column-gap:18px}.title{font-size:34px}.category{grid-template-columns:1fr;gap:12px}.detailcopy{font-size:22px}.reply{flex-direction:column}.pill.space-current{max-width:118px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.primary{font-size:0}.primary:after{content:'+';font-size:20px}.icon{width:38px;height:38px}}
 </style>
-</head>
-<body>
+</head><body>
 <div class="app">
-<header class="topbar">
-  <button class="brand" id="brandBtn">Potluck</button>
-  <div class="nav-actions">
-    <button class="btn" id="spaceBtn">Creative Circle ▾</button>
-    <button class="icon-btn" id="spaceMenuBtn" aria-label="Space actions">•••</button>
-    <button class="btn primary" id="addBtn">Bring something</button>
-    <button class="avatar-btn" id="profileBtn" aria-label="Profile">J</button>
-  </div>
+<header class="top">
+<button class="brand" id="brand">Potluck</button>
+<div class="actions">
+<button class="pill space-current" id="currentSpace" style="display:none"></button>
+<button class="icon" id="spaceMenu" style="display:none">•••</button>
+<button class="primary" id="add" style="display:none" data-i18n="bring">Bring something</button>
+<button class="icon" id="inboxBtn">⌁<span class="badge" id="badge">2</span></button>
+<button class="icon" id="profileBtn">J</button>
+</div>
 </header>
 
-<section id="home" class="screen active">
-  <div class="week-head">
-    <div class="week-title"><div class="eyebrow">Sep 1 — 7</div><h1>Our week</h1></div>
-    <div class="week-sub">A quick look at what everyone brought this week.</div>
-  </div>
-  <div id="memberGrid" class="member-grid"></div>
+<section class="screen active" id="spaces">
+<div class="head"><div><div class="eyebrow" data-i18n="private">Private by default</div><h1 class="title" data-i18n="yourSpaces">Your spaces</h1></div><div class="sub" data-i18n="spacesSub">Choose the group you want to catch up with. Only members of a space can see what is shared there.</div></div>
+<div class="space-grid" id="spaceGrid"></div>
+<div class="privacy" data-i18n="privacyNote">Potluck is designed for small private groups. Your posts stay inside the space where you shared them.</div>
 </section>
 
-<section id="person" class="screen">
-  <button class="back" data-back="home">← Our week</button>
-  <div class="person-head">
-    <div class="person-id"><div class="avatar" id="personAvatar"></div><div><div class="eyebrow">This week</div><h2 class="person-name" id="personName"></h2></div></div>
-    <div class="person-note">Their week, grouped by what they made, learned, thought about, or got stuck on.</div>
-  </div>
-  <div id="categoryList" class="category-list"></div>
+<section class="screen" id="week">
+<button class="back" onclick="go('spaces')" data-i18n="allSpaces">← All spaces</button>
+<div class="head"><div><div class="eyebrow">Sep 1 — 7</div><h1 class="title" data-i18n="ourWeek">Our week</h1></div><div class="sub" data-i18n="weekSub">A quick look at what everyone brought this week.</div></div>
+<div class="week-grid" id="weekGrid"></div>
 </section>
 
-<section id="detail" class="screen">
-  <button class="back" data-back="person">← Back to week</button>
-  <div class="detail">
-    <div class="detail-meta" id="detailMeta"></div>
-    <div class="detail-copy" id="detailCopy"></div>
-    <div class="comments"><h3>Conversation</h3><div id="commentList"></div>
-      <div class="reply"><textarea id="replyText" placeholder="Reply without starting a whole new chat…"></textarea><button class="btn" id="replyBtn">Reply</button></div>
-    </div>
-  </div>
+<section class="screen" id="person">
+<button class="back" onclick="go('week')" data-i18n="backWeek">← Our week</button>
+<div class="head"><div><div class="eyebrow" data-i18n="thisWeek">This week</div><h1 class="title" id="personName"></h1></div><div class="sub" data-i18n="personSub">Their week, grouped by what they made, learned, thought about, or got stuck on.</div></div>
+<div id="categories"></div>
 </section>
 
-<section id="profile" class="screen">
-  <button class="back" data-back="home">← Our week</button>
-  <div class="profile-page">
-    <h2>Your profile</h2>
-    <div class="muted">The identity your friends see across Potluck.</div>
-    <div class="section">
-      <div class="field"><label>Name</label><input value="James Kim"></div>
-      <div class="field"><label>Handle</label><input value="@james"></div>
-      <button class="btn">Change photo</button>
-    </div>
-  </div>
+<section class="screen" id="detail">
+<button class="back" onclick="go('person')" data-i18n="backPerson">← Back to week</button>
+<div class="detail"><div class="eyebrow" id="detailMeta"></div><div class="detailcopy" id="detailCopy"></div><div class="comments"><strong data-i18n="conversation">Conversation</strong><div id="comments"></div><div class="reply"><textarea id="replyText" data-ph="replyPh" placeholder="Reply…"></textarea><button class="pill" id="reply" data-i18n="reply">Reply</button></div></div></div>
+</section>
+
+<section class="screen" id="inbox">
+<button class="back" onclick="go(lastMain)" data-i18n="back">← Back</button>
+<div class="head"><div><div class="eyebrow" data-i18n="repliesInvites">Replies & invitations</div><h1 class="title" data-i18n="inbox">Inbox</h1></div><div class="sub" data-i18n="inboxSub">Only things that need a return path. No activity feed.</div></div>
+<div class="inbox-list" id="inboxList"></div>
+</section>
+
+<section class="screen" id="profile">
+<button class="back" onclick="go(lastMain)" data-i18n="back">← Back</button>
+<div class="profile"><div class="eyebrow" data-i18n="account">Account</div><h1 class="title" data-i18n="profile">Your profile</h1>
+<div class="field"><label data-i18n="name">Name</label><input value="James Kim"></div>
+<div class="field"><label data-i18n="handle">Handle</label><input value="@james"></div>
+<div class="field"><label data-i18n="language">Interface language</label><div class="lang"><button class="pill" data-lang="en">English</button><button class="pill" data-lang="ko">한국어</button></div></div>
+<div class="privacy" data-i18n="contentLang">Interface language does not translate posts. People can write in whichever language they prefer.</div></div>
 </section>
 </div>
 
-<div class="overlay" id="addOverlay"><div class="modal">
-  <div class="eyebrow" id="addToLabel">Add to Creative Circle</div><h2>What happened?</h2>
-  <div class="types" id="typeBtns"></div><textarea id="newEntry" placeholder="A small thing you made, learned, thought about, or got stuck on…"></textarea>
-  <div class="modal-actions"><button class="btn" id="cancelAdd">Cancel</button><button class="btn primary" id="saveEntry">Bring it</button></div>
-</div></div>
-
-<div class="sheet" id="spaceSheet"><div class="panel"><div class="panel-title">Your spaces</div><div id="spaceList"></div><div class="panel-sep"></div><button class="menu-item" id="newSpaceBtn"><span>+ New space</span></button></div></div>
-
-<div class="sheet" id="spaceActions"><div class="panel">
-  <div class="panel-title" id="spaceActionTitle">Creative Circle</div>
-  <div class="action-list">
-    <button class="action" id="inviteBtn"><span>Invite people</span><span>→</span></button>
-    <button class="action" id="membersBtn"><span>Members</span><span id="memberCount" class="small"></span></button>
-    <button class="action" id="renameBtn"><span>Rename space</span><span>→</span></button>
-    <button class="action danger" id="leaveBtn"><span>Leave space</span></button>
-  </div>
-</div></div>
-
-<div class="sheet" id="profileSheet"><div class="panel">
-  <div class="panel-title">James</div>
-  <button class="menu-item" id="editProfileBtn"><span>Edit profile</span><span>→</span></button>
-  <div class="panel-sep"></div><button class="menu-item"><span>Sign out</span></button>
-</div></div>
-
+<div class="overlay" id="capture"><div class="modal"><div class="eyebrow" id="captureSpace"></div><h2 data-i18n="whatHappened">What happened?</h2><div class="types" id="typeBtns"></div><textarea id="entry" data-ph="entryPh" placeholder="A small thing…"></textarea><div class="modal-actions"><button class="pill" id="cancel" data-i18n="cancel">Cancel</button><button class="primary" id="save" data-i18n="bringIt">Bring it</button></div></div></div>
+<div class="sheet" id="spaceActions"><div class="panel"><div class="eyebrow" id="spaceActionName" style="padding:9px 10px"></div><button class="menu" id="invite"><span data-i18n="invite">Invite people</span><span>→</span></button><button class="menu" id="members"><span data-i18n="members">Members</span><span id="memberN"></span></button><button class="menu" id="rename"><span data-i18n="rename">Rename space</span><span>→</span></button><div class="sep"></div><button class="menu" id="leave"><span data-i18n="leave">Leave space</span></button></div></div>
 <script>
 const types=["Made","Learned","Thought","Stuck"];
 const spaces=[
@@ -198,40 +131,32 @@ const spaces=[
   }
 ];
 let currentSpace=0,currentPerson=0,currentItem=0,selectedType="Thought";
+const copy={
+en:{private:"Private by default",yourSpaces:"Your spaces",spacesSub:"Choose the group you want to catch up with. Only members of a space can see what is shared there.",privacyNote:"Potluck is designed for small private groups. Your posts stay inside the space where you shared them.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",conversation:"Conversation",reply:"Reply",replyPh:"Reply without starting a whole new chat…",repliesInvites:"Replies & invitations",inbox:"Inbox",inboxSub:"Only things that need a return path. No activity feed.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Interface language does not translate posts. People can write in whichever language they prefer.",bring:"Bring something",whatHappened:"What happened?",entryPh:"A small thing you made, learned, thought about, or got stuck on…",cancel:"Cancel",bringIt:"Bring it",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply"},
+ko:{private:"기본은 비공개",yourSpaces:"내 공간",spacesSub:"지금 들어가 보고 싶은 그룹을 골라. 각 공간의 기록은 그 공간의 멤버만 볼 수 있어.",privacyNote:"Potluck은 소규모 비공개 그룹을 위한 공간이야. 올린 글은 공유한 공간 안에만 남아.",allSpaces:"← 모든 공간",ourWeek:"우리의 한 주",weekSub:"이번 주에 각자 가져온 것을 가볍게 훑어봐.",backWeek:"← 우리의 한 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것으로 나눠 본 한 주.",backPerson:"← 한 주로 돌아가기",conversation:"대화",reply:"답글",replyPh:"새 채팅을 시작하지 않고 답글 남기기…",repliesInvites:"답글과 초대",inbox:"받은 소식",inboxSub:"다시 돌아가 볼 이유가 있는 것만 모아둬. 활동 피드는 아니야.",back:"← 돌아가기",account:"계정",profile:"내 프로필",name:"이름",handle:"핸들",language:"인터페이스 언어",contentLang:"인터페이스 언어를 바꿔도 작성한 글은 번역되지 않아. 각자 편한 언어로 쓰면 돼.",bring:"하나 놓고 가기",whatHappened:"이번 주에 뭐가 있었어?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 작은 조각 하나…",cancel:"취소",bringIt:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글"}};
+let lang="en",lastMain="spaces";
 const $=s=>document.querySelector(s);
-const show=id=>{document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$("#"+id).classList.add("active");window.scrollTo(0,0)};
-function closeSheets(){document.querySelectorAll(".sheet").forEach(x=>x.classList.remove("show"))}
-function hintFor(p,featured){const rest=[...new Set(p.items.filter(x=>x!==featured).map(x=>x.type))];return rest.length?`Also: ${rest.join(" · ")}`:"Quiet week"}
-function renderHome(){
- const members=spaces[currentSpace].members;
- $("#memberGrid").innerHTML=members.map((p,i)=>{const featured=p.items[0]||{type:"",text:"Nothing here this week."};return `<button class="member" onclick="openPerson(${i})"><div class="member-name">${p.name}</div><div class="member-trace"><div class="trace-type">${featured.type||"This week"}</div><div class="trace-copy">${featured.text}</div></div><div class="trace-hint">${hintFor(p,featured)}</div></button>`}).join("");
- $("#spaceBtn").textContent=spaces[currentSpace].name+" ▾";$("#addToLabel").textContent="Add to "+spaces[currentSpace].name;$("#spaceActionTitle").textContent=spaces[currentSpace].name;$("#memberCount").textContent=spaces[currentSpace].members.length+" people";
-}
-window.openPerson=i=>{currentPerson=i;const p=spaces[currentSpace].members[i];$("#personName").textContent=p.name;$("#personAvatar").textContent=p.initial;
- $("#categoryList").innerHTML=types.map(t=>{const arr=p.items.map((x,idx)=>({...x,idx})).filter(x=>x.type===t);return `<section class="category"><div class="category-label"><div class="eyebrow">${t}</div><div class="small">${arr.length||""}</div></div><div class="category-items">${arr.length?arr.map(x=>`<button class="trace-row" onclick="openDetail(${x.idx})">${x.text}</button>`).join(""):`<div class="empty">Nothing here this week.</div>`}</div></section>`}).join("");show("person")};
-window.openDetail=idx=>{currentItem=idx;const p=spaces[currentSpace].members[currentPerson],x=p.items[idx];$("#detailMeta").textContent=`${p.name} · ${x.type} · Sep 3`;$("#detailCopy").textContent=x.text;renderComments();show("detail")};
-function renderComments(){const x=spaces[currentSpace].members[currentPerson].items[currentItem];$("#commentList").innerHTML=x.comments.length?x.comments.map(c=>`<div class="comment">${c}</div>`).join(""):`<div class="empty" style="padding:6px 0 4px">No replies yet.</div>`}
-function renderTypes(){$("#typeBtns").innerHTML=types.map(t=>`<button class="chip ${t===selectedType?"active":""}" onclick="pickType('${t}')">${t}</button>`).join("")}
-window.pickType=t=>{selectedType=t;renderTypes()};
-function renderSpaces(){$("#spaceList").innerHTML=spaces.map((s,i)=>`<button class="space-item ${i===currentSpace?"active":""}" onclick="switchSpace(${i})"><span>${s.name}</span><span class="small">${s.members.length}</span></button>`).join("")}
-window.switchSpace=i=>{currentSpace=i;closeSheets();renderHome();show("home")};
-document.querySelectorAll("[data-back]").forEach(b=>b.onclick=()=>show(b.dataset.back));
-$("#brandBtn").onclick=()=>show("home");
-$("#addBtn").onclick=()=>{$("#addOverlay").classList.add("show");renderTypes()};
-$("#cancelAdd").onclick=()=>$("#addOverlay").classList.remove("show");
-$("#saveEntry").onclick=()=>{const v=$("#newEntry").value.trim();if(!v)return;const me=spaces[currentSpace].members.find(m=>m.name==="James")||spaces[currentSpace].members[0];me.items.unshift({type:selectedType,text:v,comments:[]});$("#newEntry").value="";$("#addOverlay").classList.remove("show");renderHome()};
-$("#replyBtn").onclick=()=>{const v=$("#replyText").value.trim();if(!v)return;spaces[currentSpace].members[currentPerson].items[currentItem].comments.push("You: "+v);$("#replyText").value="";renderComments()};
-$("#spaceBtn").onclick=()=>{closeSheets();renderSpaces();$("#spaceSheet").classList.add("show")};
-$("#spaceMenuBtn").onclick=()=>{closeSheets();renderHome();$("#spaceActions").classList.add("show")};
-$("#profileBtn").onclick=()=>{closeSheets();$("#profileSheet").classList.add("show")};
-document.querySelectorAll(".sheet").forEach(s=>s.onclick=e=>{if(e.target===s)s.classList.remove("show")});
-$("#editProfileBtn").onclick=()=>{closeSheets();show("profile")};
-$("#newSpaceBtn").onclick=()=>alert("Mock only — Create / Join space comes with the backend.");
-$("#inviteBtn").onclick=()=>alert("Mock: invite link copied.");
-$("#membersBtn").onclick=()=>alert(spaces[currentSpace].members.map(m=>m.name).join(", "));
-$("#renameBtn").onclick=()=>{const n=prompt("Rename this space",spaces[currentSpace].name);if(n&&n.trim()){spaces[currentSpace].name=n.trim();closeSheets();renderHome()}};
-$("#leaveBtn").onclick=()=>alert("Mock only — no space is actually changed.");
-renderHome();
-</script>
-</body>
-</html>
+function t(k){return copy[lang][k]||k}
+function applyLang(){document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));renderSpaces();if($("#week").classList.contains("active"))renderWeek();if($("#person").classList.contains("active"))renderPerson();renderInbox()}
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$("#"+id).classList.add("active");if(["spaces","week","person","detail"].includes(id))lastMain=id;const inside=id!=="spaces";$("#currentSpace").style.display=inside?"block":"none";$("#spaceMenu").style.display=inside?"grid":"none";$("#add").style.display=inside?"block":"none";window.scrollTo(0,0)}
+const unread=[{space:0,person:0,item:0,who:"Min",text:"The archive angle still feels like the difference to me.",time:"2h"},{space:0,person:2,item:0,who:"June",text:"Same problem. Want to compare outlines?",time:"Yesterday"}];
+function renderSpaces(){$("#spaceGrid").innerHTML=spaces.map((s,i)=>{const names=s.members.map(m=>m.name).join(" · ");const first=s.members[0]?.items[0];const n=unread.filter(x=>x.space===i).length;return `<button class="space-card" onclick="openSpace(${i})"><div class="space-name">${s.name}</div><div class="members">${names}</div><div class="space-preview">${first?.text||""}</div><div class="space-foot"><span>${s.members.length} people</span><span class="${n?"unread":""}">${n?n+" "+t("newReply"):""}</span></div></button>`}).join("")+`<button class="space-card" onclick="alert('Mock only — backend next.')"><div class="space-name">+ ${lang==="ko"?"새 공간":"New space"}</div><div class="members">${lang==="ko"?"친구 그룹 만들기 또는 참여":"Create or join a friend group"}</div></button>`}
+window.openSpace=i=>{currentSpace=i;$("#currentSpace").textContent=spaces[i].name;$("#captureSpace").textContent=spaces[i].name;$("#spaceActionName").textContent=spaces[i].name;$("#memberN").textContent=spaces[i].members.length;renderWeek();go("week")}
+function hint(p,f){let rest=[...new Set(p.items.filter(x=>x!==f).map(x=>t(x.type)))];return rest.length?`${t("also")}: ${rest.join(" · ")}`:""}
+function renderWeek(){$("#weekGrid").innerHTML=spaces[currentSpace].members.map((p,i)=>{let f=p.items[0];let r=f?.comments?.length||0;return `<button class="person" onclick="openPerson(${i})"><div class="person-name">${p.name}</div><div class="trace-type">${t(f.type)}</div><div class="trace">${f.text}</div><div class="trace-foot">${r?`${r} ${t("newReply")} · `:""}${hint(p,f)}</div></button>`}).join("")}
+window.openPerson=i=>{currentPerson=i;renderPerson();go("person")}
+function renderPerson(){let p=spaces[currentSpace].members[currentPerson];$("#personName").textContent=p.name;$("#categories").innerHTML=types.map(type=>{let arr=p.items.map((x,idx)=>({...x,idx})).filter(x=>x.type===type);return `<section class="category"><div><div class="eyebrow">${t(type)}</div><div class="small">${arr.length||""}</div></div><div>${arr.length?arr.map(x=>`<button class="row" onclick="openDetail(${x.idx})">${x.text}<div class="rowmeta">${x.comments.length?x.comments.length+" "+t("newReply"):""}</div></button>`).join(""):`<div class="muted">${lang==="ko"?"이번 주엔 아직 없어.":"Nothing here this week."}</div>`}</div></section>`}).join("")}
+window.openDetail=i=>{currentItem=i;let p=spaces[currentSpace].members[currentPerson],x=p.items[i];$("#detailMeta").textContent=`${p.name} · ${t(x.type)} · Sep 3`;$("#detailCopy").textContent=x.text;renderComments();go("detail")}
+function renderComments(){let x=spaces[currentSpace].members[currentPerson].items[currentItem];$("#comments").innerHTML=x.comments.length?x.comments.map(c=>`<div class="comment">${c}</div>`).join(""):`<div class="muted" style="padding:14px 0">${lang==="ko"?"아직 답글이 없어.":"No replies yet."}</div>`}
+function renderInbox(){$("#inboxList").innerHTML=unread.map((n,i)=>{let s=spaces[n.space],p=s.members[n.person],x=p.items[n.item];return `<button class="notice" onclick="openNotice(${i})"><span class="dot"></span><span><div class="notice-title">${n.who} ${lang==="ko"?"님이 답글을 남겼어":"replied"} · ${s.name}</div><div class="notice-preview">“${x.text}” — ${n.text}</div></span><span class="notice-time">${n.time}</span></button>`}).join("")}
+window.openNotice=i=>{let n=unread[i];currentSpace=n.space;currentPerson=n.person;currentItem=n.item;$("#currentSpace").textContent=spaces[currentSpace].name;openDetail(currentItem)}
+$("#brand").onclick=()=>go("spaces");$("#inboxBtn").onclick=()=>{renderInbox();go("inbox")};$("#profileBtn").onclick=()=>go("profile");
+$("#add").onclick=()=>{$("#capture").classList.add("show");$("#typeBtns").innerHTML=types.map(x=>`<button class="pill ${x===selectedType?"active":""}" onclick="pick('${x}')">${t(x)}</button>`).join("")};
+window.pick=x=>{selectedType=x;$("#typeBtns").innerHTML=types.map(y=>`<button class="pill ${y===selectedType?"active":""}" onclick="pick('${y}')">${t(y)}</button>`).join("")};
+$("#cancel").onclick=()=>$("#capture").classList.remove("show");$("#save").onclick=()=>{let v=$("#entry").value.trim();if(!v)return;let me=spaces[currentSpace].members.find(m=>m.name==="James")||spaces[currentSpace].members[0];me.items.unshift({type:selectedType,text:v,comments:[]});$("#entry").value="";$("#capture").classList.remove("show");renderWeek()};
+$("#reply").onclick=()=>{let v=$("#replyText").value.trim();if(!v)return;spaces[currentSpace].members[currentPerson].items[currentItem].comments.push("You: "+v);$("#replyText").value="";renderComments()};
+$("#spaceMenu").onclick=()=>$("#spaceActions").classList.add("show");$("#spaceActions").onclick=e=>{if(e.target===$("#spaceActions")[0])$("#spaceActions").classList.remove("show")};
+$("#invite").onclick=()=>alert("Mock: invite link copied.");$("#members").onclick=()=>alert(spaces[currentSpace].members.map(m=>m.name).join(", "));$("#rename").onclick=()=>{let n=prompt("Rename",spaces[currentSpace].name);if(n){spaces[currentSpace].name=n;$("#spaceActions").classList.remove("show");$("#currentSpace").textContent=n;renderSpaces()}};$("#leave").onclick=()=>alert("Mock only.");
+document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;applyLang()});
+applyLang();go("spaces");
+</script></body></html>

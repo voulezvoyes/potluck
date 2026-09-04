@@ -94,27 +94,45 @@ Pretendard remains the primary interface and reading typeface. ChosunIlbo Myungj
 - Do users treat different spaces as meaningfully different contexts?
 
 
-## Sep 3, 2026 — V0.6: controls belong to their context
+## Sep 3, 2026 — V0.7: global home, return paths, bilingual architecture
 
-V0.5 introduced a generic settings center that combined account-level profile controls with space-level controls. In use, this created an unnecessary layer and blurred which object each setting belonged to.
+### Global home
+With multiple spaces, opening directly into the last active group made the application hierarchy ambiguous.
 
-**Decision:** remove the shared settings center.
+**Decision:** Potluck now opens at `Your spaces`. The global home exists to choose a social context and surface only lightweight unread interaction. It is not an activity dashboard.
 
-Revised ownership:
-- Profile is global to the account and is accessed from the user avatar.
-- Space switching is limited to switching spaces and creating a new space.
-- Space actions stay attached to the active space through a lightweight contextual menu.
-- Capture remains context-aware: a new trace is always added to the currently active space.
+### Return paths
+Replies were previously visible only after reopening an individual trace.
 
-The main navigation model is now:
-- Group = glimpse
-- Person × Week = understand
-- Trace = discuss
+**Decision:** add two levels of reply visibility:
+- local reply indicators on traces
+- a global Inbox for replies and invitations
 
-The person-level 2×2 matrix was also removed. It imposed a fixed visual structure on uneven weekly content, producing oversized empty regions when a category contained little or nothing. V0.6 keeps the same information architecture but renders Made / Learned / Thought / Stuck as vertical sections that expand naturally with content.
+The Inbox is intentionally not an engagement feed. Posting activity, likes, streaks, and generic friend activity are excluded.
 
-Still unvalidated:
-- Whether the person layer earns its navigation step in real group use.
-- Whether one representative trace per person creates enough curiosity to open a week.
-- Whether the four entry types are useful structure or eventually become posting friction.
-- Whether contextual space actions remain discoverable without becoming persistent navigation.
+### Language
+V0.7 introduces an English/Korean interface architecture. System copy is separated from user-generated content.
+
+**Decision:** changing interface language changes navigation, labels, controls, and explanatory copy, but does not translate members' posts.
+
+English remains the default for the public portfolio prototype; Korean can be selected from Profile.
+
+### Privacy expectation
+Before backend implementation, the frontend now communicates the core privacy expectation: content is private to members of the space in which it was shared.
+
+This is only interface copy in V0.7. Actual privacy enforcement must be implemented at the database layer with membership-based authorization before real user data is stored.
+
+### Backend gate
+Before Supabase integration, define:
+- profiles
+- spaces
+- space_members
+- entries
+- replies
+- invitations
+- notifications
+- row-level access rules
+- delete/account-exit behavior
+- what user data is and is not collected
+
+No real authentication or persistent private data is enabled in V0.7.

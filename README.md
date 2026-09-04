@@ -1,15 +1,21 @@
-# Potluck — V0.6
+# Potluck — V0.7
 
-A lightweight shared weekly log for small private groups.
+Frontend prototype for a small-group shared weekly log.
 
-Open `index.html` or deploy the repository directly to Vercel.
+## IA
+Global:
+- Your spaces
+- Inbox
+- Profile / EN-KO interface language
 
-## V0.6 prototype
-- Space switcher only switches/creates spaces.
-- Profile is global and lives behind the avatar.
-- Space actions are contextual (`•••`) instead of a settings center.
-- Person-week view uses flexible vertical categories instead of a rigid 2×2 matrix.
-- Trace detail and lightweight replies remain.
-- “Bring something” always posts into the active space.
+Inside a space:
+- Our week
+- Person week
+- Trace
+- Replies
+- Contextual space actions
 
-This is still a frontend mock. Data resets on refresh; no auth, database, or real invite behavior is connected yet.
+## Important
+This version still uses local mock data. Privacy copy is a product expectation, not yet a security guarantee. Do not use this prototype for sensitive real data until authentication, membership authorization, and database Row Level Security are implemented.
+
+Next step: security/data model, then Supabase.
