@@ -162,6 +162,15 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   .inbox-item{padding:16px 20px}
 }
 
+
+/* V1.5.3 ownership transfer */
+.member-choice-list{display:grid;gap:8px;margin-top:14px;max-height:320px;overflow:auto}
+.member-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px;font:inherit;cursor:pointer}
+.member-choice:hover{background:#f7f6f2}
+.member-choice.active{border-color:var(--ink)}
+.member-choice-name{font-weight:600}
+.member-choice-handle{font-size:12px;color:var(--muted)}
+.owner-note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:10px}
 </style>
 </head>
 <body>
@@ -369,12 +378,26 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   </aside>
 </div>
 
+
+<div class="overlay" id="transferOwnershipModal"><div class="modal">
+  <div class="eyebrow" data-i18n="transferOwnership">Transfer ownership</div>
+  <h2 data-i18n="transferOwnershipTitle">Choose a new owner</h2>
+  <p class="muted" data-i18n="transferOwnershipBody">You’ll stay in this space as a regular member.</p>
+  <div class="member-choice-list" id="transferMemberList"></div>
+  <div class="owner-note" id="transferOwnershipNote"></div>
+  <div class="modal-actions">
+    <button class="pill" id="cancelTransferOwnership" data-i18n="cancel">Cancel</button>
+    <button class="primary" id="confirmTransferOwnership" disabled data-i18n="transferOwnership">Transfer ownership</button>
+  </div>
+  <div class="status" id="transferOwnershipStatus"></div>
+</div></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./config.js"></script>
 <script>
 const copy={
-en:{private:"Private space",unread:"Unread",all:"All",edit:"Edit",editEntry:"Edit entry",editEntryTitle:"Update what you brought",deleteEntry:"Delete entry",saveChanges:"Save changes",deleteAccount:"Delete account",deleteAccountTitle:"Permanently delete your account?",deleteAccountBody:"Delete your Potluck data and account permanently.",deleteAccountLong:"Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
-ko:{private:"비공개 공간",unread:"읽지 않음",all:"전체",edit:"수정",editEntry:"기록 수정",editEntryTitle:"가져온 기록 수정하기",deleteEntry:"기록 삭제",saveChanges:"변경 저장",deleteAccount:"계정 삭제",deleteAccountTitle:"계정을 영구 삭제할까요?",deleteAccountBody:"Potluck의 내 데이터와 계정을 영구 삭제합니다.",deleteAccountLong:"내 기록, 답글, 멤버십, 알림, 내가 만든 공간, 프로필과 로그인 계정이 모두 영구 삭제됩니다.",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
+en:{private:"Private space",transferOwnership:"Transfer ownership",transferOwnershipTitle:"Choose a new owner",transferOwnershipBody:"You’ll stay in this space as a regular member.",ownerMustTransfer:"Transfer ownership before leaving this space.",ownedSpacesBlockDelete:"You still own spaces with other members. Transfer ownership before deleting your account.",unread:"Unread",all:"All",edit:"Edit",editEntry:"Edit entry",editEntryTitle:"Update what you brought",deleteEntry:"Delete entry",saveChanges:"Save changes",deleteAccount:"Delete account",deleteAccountTitle:"Permanently delete your account?",deleteAccountBody:"Delete your Potluck data and account permanently.",deleteAccountLong:"Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
+ko:{private:"비공개 공간",transferOwnership:"방장 위임",transferOwnershipTitle:"새 방장을 선택하세요",transferOwnershipBody:"위임 후에도 이 공간의 일반 멤버로 남습니다.",ownerMustTransfer:"이 공간을 나가려면 먼저 방장을 위임하세요.",ownedSpacesBlockDelete:"다른 멤버가 있는 공간의 방장입니다. 계정을 삭제하기 전에 방장을 위임하세요.",unread:"읽지 않음",all:"전체",edit:"수정",editEntry:"기록 수정",editEntryTitle:"가져온 기록 수정하기",deleteEntry:"기록 삭제",saveChanges:"변경 저장",deleteAccount:"계정 삭제",deleteAccountTitle:"계정을 영구 삭제할까요?",deleteAccountBody:"Potluck의 내 데이터와 계정을 영구 삭제합니다.",deleteAccountLong:"내 기록, 답글, 멤버십, 알림, 내가 만든 공간, 프로필과 로그인 계정이 모두 영구 삭제됩니다.",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
 const types=["Made","Learned","Thought","Stuck"];
 let lang="en", client=null, user=null, profile=null, spaces=[], currentSpace=null,currentPerson=null,currentEntry=null,lastMain="spaces",selectedType="Thought";
 const $=s=>document.querySelector(s); const t=k=>copy[lang][k]||k;
@@ -546,6 +569,70 @@ async function renderReplies(){
  $("#replies").innerHTML=(data||[]).map(r=>`<div class="reply-item"><div class="reply-name">${esc(r.profiles?.display_name||"Member")}</div><div>${esc(r.body)}</div></div>`).join("")
 }
 
+
+let transferTargetUserId=null;
+
+async function getCurrentSpaceMembers(){
+  if(!currentSpace?.id)return [];
+  const {data,error}=await client.from("space_members").select("user_id,profiles:user_id(display_name,handle)").eq("space_id",currentSpace.id);
+  if(error)throw error;
+  return data||[];
+}
+async function isCurrentUserOwner(){
+  if(!currentSpace?.id)return false;
+  const {data,error}=await client.from("spaces").select("owner_id").eq("id",currentSpace.id).single();
+  return !error && data?.owner_id===user.id;
+}
+async function openTransferOwnership(){
+  if(!currentSpace)return;
+  $("#spaceActionSheet")?.classList.remove("show");
+  $("#transferOwnershipStatus").textContent="";
+  transferTargetUserId=null;
+  $("#confirmTransferOwnership").disabled=true;
+
+  const owner=await isCurrentUserOwner();
+  if(!owner){
+    $("#transferOwnershipStatus").textContent=lang==="ko"?"현재 방장만 위임할 수 있습니다.":"Only the current owner can transfer ownership.";
+    $("#transferOwnershipStatus").className="status error";
+    $("#transferMemberList").innerHTML="";
+    $("#transferOwnershipModal").classList.add("show");
+    return;
+  }
+
+  const members=await getCurrentSpaceMembers().catch(()=>[]);
+  const others=members.filter(m=>m.user_id!==user.id);
+  $("#transferMemberList").innerHTML=others.length?others.map(m=>{
+    const name=m.profiles?.display_name||"Member";
+    const handle=m.profiles?.handle?`@${m.profiles.handle}`:"";
+    return `<button class="member-choice" data-transfer-user="${m.user_id}">
+      <div><div class="member-choice-name">${esc(name)}</div><div class="member-choice-handle">${esc(handle)}</div></div><span>→</span>
+    </button>`;
+  }).join(""):`<div class="inbox-empty">${lang==="ko"?"위임할 다른 멤버가 없습니다.":"There are no other members to transfer ownership to."}</div>`;
+
+  document.querySelectorAll("[data-transfer-user]").forEach(btn=>{
+    btn.onclick=()=>{
+      transferTargetUserId=btn.dataset.transferUser;
+      document.querySelectorAll("[data-transfer-user]").forEach(x=>x.classList.toggle("active",x===btn));
+      $("#confirmTransferOwnership").disabled=false;
+    };
+  });
+  $("#transferOwnershipNote").textContent=lang==="ko"?"위임하면 기존 방장은 일반 멤버로 남습니다.":"After transfer, you remain a regular member.";
+  $("#transferOwnershipModal").classList.add("show");
+}
+async function confirmTransferOwnership(){
+  if(!currentSpace?.id||!transferTargetUserId)return;
+  $("#confirmTransferOwnership").disabled=true;
+  const {error}=await client.rpc("transfer_space_ownership",{target_space:currentSpace.id,new_owner:transferTargetUserId});
+  if(error){
+    $("#transferOwnershipStatus").textContent=error.message;
+    $("#transferOwnershipStatus").className="status error";
+    $("#confirmTransferOwnership").disabled=false;
+    return;
+  }
+  $("#transferOwnershipModal").classList.remove("show");
+  await loadSpaces();
+  currentSpace=spaces.find(s=>s.id===currentSpace.id)||currentSpace;
+}
 let inboxFilter="unread";
 
 function openInboxDrawer(){
@@ -742,6 +829,21 @@ async function deleteOwnAccount(){
   const email=$("#deleteEmailInput").value.trim();
   if(email!==(user?.email||""))return;
   $("#confirmDeleteAccount").disabled=true;
+  $("#deleteAccountStatus").textContent=lang==="ko"?"계정 확인 중...":"Checking account...";
+  const {data:owned,error:ownedError}=await client.from("spaces").select("id,name,space_members(user_id)").eq("owner_id",user.id);
+  if(ownedError){
+    $("#deleteAccountStatus").textContent=ownedError.message;
+    $("#deleteAccountStatus").className="status error";
+    $("#confirmDeleteAccount").disabled=false;
+    return;
+  }
+  const blocking=(owned||[]).filter(s=>(s.space_members||[]).some(m=>m.user_id!==user.id));
+  if(blocking.length){
+    $("#deleteAccountStatus").textContent=t("ownedSpacesBlockDelete")+" "+blocking.map(s=>s.name).join(", ");
+    $("#deleteAccountStatus").className="status error";
+    $("#confirmDeleteAccount").disabled=false;
+    return;
+  }
   $("#deleteAccountStatus").textContent=lang==="ko"?"계정 삭제 중...":"Deleting account...";
   const {data:{session}}=await client.auth.getSession();
   const res=await fetch(`${POTLUCK_CONFIG.supabaseUrl}/functions/v1/delete-account`,{
@@ -776,6 +878,10 @@ document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=async()=>{lang=b.d
 
 
 
+
+if($("#transferOwnershipBtn"))$("#transferOwnershipBtn").onclick=openTransferOwnership;
+$("#cancelTransferOwnership").onclick=()=>$("#transferOwnershipModal").classList.remove("show");
+$("#confirmTransferOwnership").onclick=confirmTransferOwnership;
 $("#closeInboxDrawer").onclick=closeInboxDrawer;
 $("#inboxUnreadFilter").onclick=()=>{inboxFilter="unread";renderInboxDrawer()};
 $("#inboxAllFilter").onclick=()=>{inboxFilter="all";renderInboxDrawer()};
