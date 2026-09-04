@@ -135,3 +135,11 @@ The previous V1.4 package did not actually replace the authentication markup. Th
 - Invite query parameters are preserved through OAuth redirect.
 - Magic-link login remains as fallback with a 60-second cooldown.
 - Service-worker cache version bumped to force the new shell.
+
+## Sep 3, 2026 — V1.5.2: Inbox drawer
+
+- Replaced the full-page Inbox interaction with a contextual drawer.
+- Desktop uses a right-side drawer; mobile uses a near-full-height bottom sheet.
+- Inbox can be dismissed by backdrop click, close button, or Escape.
+- Notification clicks mark the item read, close the drawer, and navigate directly to the related entry.
+- Added Unread / All filtering without leaving the current page.

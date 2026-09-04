@@ -110,6 +110,58 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 .danger-zone p{font-size:13px;color:var(--muted);line-height:1.55;max-width:560px}
 .confirm-line{font-size:13px;color:var(--muted);margin-bottom:8px}
 
+
+/* V1.5.2 Inbox drawer */
+.inbox-drawer-layer{
+  position:fixed;inset:0;background:rgba(20,20,18,.28);
+  z-index:80;display:none;
+}
+.inbox-drawer-layer.show{display:block}
+.inbox-drawer{
+  position:absolute;top:0;right:0;height:100%;width:min(430px,92vw);
+  background:var(--bg);border-left:1px solid var(--line);
+  box-shadow:-18px 0 50px rgba(0,0,0,.08);
+  display:flex;flex-direction:column;
+  transform:translateX(12px);opacity:0;
+  transition:transform .18s ease,opacity .18s ease;
+}
+.inbox-drawer-layer.show .inbox-drawer{transform:translateX(0);opacity:1}
+.inbox-drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 24px 16px;border-bottom:1px solid var(--line);
+}
+.inbox-drawer-head h2{font-family:Pretendard,sans-serif;font-size:22px;margin:0}
+.inbox-drawer-body{overflow:auto;padding:8px 0 28px}
+.inbox-filter{display:flex;gap:8px;padding:14px 24px}
+.inbox-filter .active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.inbox-item{
+  display:block;width:100%;text-align:left;border:0;background:transparent;
+  padding:16px 24px;border-top:1px solid var(--line);cursor:pointer;
+  font:inherit;color:var(--ink);
+}
+.inbox-item:hover{background:#f7f6f2}
+.inbox-item.unread{background:#faf7f1}
+.inbox-item-title{font-size:14px;line-height:1.45;margin-bottom:5px}
+.inbox-item-preview{font-size:13px;line-height:1.45;color:var(--muted);
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.inbox-item-meta{font-size:11px;color:var(--muted);margin-top:7px}
+.inbox-empty{padding:30px 24px;color:var(--muted);font-size:14px;line-height:1.55}
+
+@media(max-width:700px){
+  .inbox-drawer-layer{display:none;align-items:flex-end}
+  .inbox-drawer-layer.show{display:flex}
+  .inbox-drawer{
+    position:relative;top:auto;right:auto;width:100%;height:min(90vh,760px);
+    border-left:0;border-top:1px solid var(--line);
+    border-radius:22px 22px 0 0;
+    transform:translateY(12px);
+  }
+  .inbox-drawer-layer.show .inbox-drawer{transform:translateY(0)}
+  .inbox-drawer-head{padding:20px 20px 14px}
+  .inbox-filter{padding:12px 20px}
+  .inbox-item{padding:16px 20px}
+}
+
 </style>
 </head>
 <body>
@@ -302,12 +354,27 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   <div class="status" id="deleteAccountStatus"></div>
 </div></div>
 
+
+<div class="inbox-drawer-layer" id="inboxDrawerLayer">
+  <aside class="inbox-drawer" id="inboxDrawer" aria-label="Inbox">
+    <div class="inbox-drawer-head">
+      <h2 data-i18n="inbox">Inbox</h2>
+      <button class="icon" id="closeInboxDrawer" aria-label="Close">×</button>
+    </div>
+    <div class="inbox-filter">
+      <button class="pill active" id="inboxUnreadFilter" data-i18n="unread">Unread</button>
+      <button class="pill" id="inboxAllFilter" data-i18n="all">All</button>
+    </div>
+    <div class="inbox-drawer-body" id="inboxDrawerList"></div>
+  </aside>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./config.js"></script>
 <script>
 const copy={
-en:{private:"Private space",edit:"Edit",editEntry:"Edit entry",editEntryTitle:"Update what you brought",deleteEntry:"Delete entry",saveChanges:"Save changes",deleteAccount:"Delete account",deleteAccountTitle:"Permanently delete your account?",deleteAccountBody:"Delete your Potluck data and account permanently.",deleteAccountLong:"Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
-ko:{private:"비공개 공간",edit:"수정",editEntry:"기록 수정",editEntryTitle:"가져온 기록 수정하기",deleteEntry:"기록 삭제",saveChanges:"변경 저장",deleteAccount:"계정 삭제",deleteAccountTitle:"계정을 영구 삭제할까요?",deleteAccountBody:"Potluck의 내 데이터와 계정을 영구 삭제합니다.",deleteAccountLong:"내 기록, 답글, 멤버십, 알림, 내가 만든 공간, 프로필과 로그인 계정이 모두 영구 삭제됩니다.",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
+en:{private:"Private space",unread:"Unread",all:"All",edit:"Edit",editEntry:"Edit entry",editEntryTitle:"Update what you brought",deleteEntry:"Delete entry",saveChanges:"Save changes",deleteAccount:"Delete account",deleteAccountTitle:"Permanently delete your account?",deleteAccountBody:"Delete your Potluck data and account permanently.",deleteAccountLong:"Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
+ko:{private:"비공개 공간",unread:"읽지 않음",all:"전체",edit:"수정",editEntry:"기록 수정",editEntryTitle:"가져온 기록 수정하기",deleteEntry:"기록 삭제",saveChanges:"변경 저장",deleteAccount:"계정 삭제",deleteAccountTitle:"계정을 영구 삭제할까요?",deleteAccountBody:"Potluck의 내 데이터와 계정을 영구 삭제합니다.",deleteAccountLong:"내 기록, 답글, 멤버십, 알림, 내가 만든 공간, 프로필과 로그인 계정이 모두 영구 삭제됩니다.",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
 const types=["Made","Learned","Thought","Stuck"];
 let lang="en", client=null, user=null, profile=null, spaces=[], currentSpace=null,currentPerson=null,currentEntry=null,lastMain="spaces",selectedType="Thought";
 const $=s=>document.querySelector(s); const t=k=>copy[lang][k]||k;
@@ -362,7 +429,7 @@ async function restoreRoute(r){
   restoringRoute=true;
   try{
     if(r.screen==="spaces"){currentSpace=null;currentPerson=null;currentEntry=null;show("spaces",{route:false});return}
-    if(r.screen==="inbox"){await renderInbox();show("inbox",{route:false});return}
+    if(r.screen==="inbox"){show("spaces",{route:false});openInboxDrawer();return}
     if(r.screen==="profile"){show("profile",{route:false});return}
     if(!r.spaceId){show("spaces",{route:false});return}
     currentSpace=spaces.find(s=>s.id===r.spaceId);
@@ -478,6 +545,78 @@ async function renderReplies(){
  const {data}=await client.from("replies").select("id,body,created_at,author_id,profiles:author_id(display_name)").eq("entry_id",currentEntry.id).order("created_at");
  $("#replies").innerHTML=(data||[]).map(r=>`<div class="reply-item"><div class="reply-name">${esc(r.profiles?.display_name||"Member")}</div><div>${esc(r.body)}</div></div>`).join("")
 }
+
+let inboxFilter="unread";
+
+function openInboxDrawer(){
+  $("#inboxDrawerLayer").classList.add("show");
+  renderInboxDrawer();
+}
+function closeInboxDrawer(){
+  $("#inboxDrawerLayer").classList.remove("show");
+}
+async function renderInboxDrawer(){
+  const q=client.from("notifications")
+    .select("id,user_id,entry_id,actor_id,kind,created_at,read_at,entries:entry_id(id,space_id,body,type,profiles:author_id(display_name)),actors:actor_id(display_name)")
+    .eq("user_id",user.id)
+    .order("created_at",{ascending:false})
+    .limit(50);
+  const {data:items,error}=await q;
+  if(error){
+    $("#inboxDrawerList").innerHTML=`<div class="inbox-empty">${error.message}</div>`;
+    return;
+  }
+
+  const filtered=(items||[]).filter(n=>inboxFilter==="all"||!n.read_at);
+  $("#inboxUnreadFilter").classList.toggle("active",inboxFilter==="unread");
+  $("#inboxAllFilter").classList.toggle("active",inboxFilter==="all");
+
+  if(!filtered.length){
+    $("#inboxDrawerList").innerHTML=`<div class="inbox-empty">${lang==="ko"?(inboxFilter==="unread"?"새 소식이 없습니다.":"아직 소식이 없습니다."):(inboxFilter==="unread"?"No unread updates.":"Nothing here yet.")}</div>`;
+    return;
+  }
+
+  $("#inboxDrawerList").innerHTML=filtered.map(n=>{
+    const actor=n.actors?.display_name||"Someone";
+    const body=n.entries?.body||"";
+    const space=spaces.find(s=>s.id===n.entries?.space_id)?.name||"";
+    const title=n.kind==="reply"
+      ? (lang==="ko"?`${actor}님이 내 기록에 답글을 남겼습니다.`:`${actor} replied to your entry.`)
+      : (lang==="ko"?`${actor}님의 새 소식`:`Update from ${actor}`);
+    return `<button class="inbox-item ${n.read_at?"":"unread"}" data-inbox-id="${n.id}" data-entry-id="${n.entry_id||""}" data-space-id="${n.entries?.space_id||""}">
+      <div class="inbox-item-title">${esc(title)}</div>
+      <div class="inbox-item-preview">${esc(body)}</div>
+      <div class="inbox-item-meta">${esc(space)}${space?" · ":""}${new Date(n.created_at).toLocaleString()}</div>
+    </button>`;
+  }).join("");
+
+  document.querySelectorAll("[data-inbox-id]").forEach(btn=>{
+    btn.onclick=async()=>{
+      const nid=btn.dataset.inboxId;
+      const entryId=btn.dataset.entryId;
+      const spaceId=btn.dataset.spaceId;
+
+      await client.from("notifications").update({read_at:new Date().toISOString()}).eq("id",nid).eq("user_id",user.id);
+      await refreshUnread();
+      closeInboxDrawer();
+
+      if(spaceId){
+        currentSpace=spaces.find(s=>s.id===spaceId)||currentSpace;
+        if(currentSpace){
+          $("#currentSpace").textContent=currentSpace.name;
+          $("#spaceActionName").textContent=currentSpace.name;
+          $("#memberN").textContent=currentSpace.member_count;
+          $("#captureSpace").textContent=currentSpace.name;
+          $("#weekRange").textContent=fmtRange();
+        }
+      }
+      if(entryId){
+        await openEntry(entryId);
+      }
+    };
+  });
+}
+
 async function renderInbox(){
  const {data:notes,error}=await client.from("notifications").select("id,type,space_id,entry_id,actor_id,created_at,read_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(50);
  if(error){console.error(error);return}
@@ -619,7 +758,7 @@ async function deleteOwnAccount(){
 function closeTransient(el){el.classList.remove("show")}
 function closeAllTransient(){document.querySelectorAll(".overlay.show,.sheet.show").forEach(closeTransient)}
 
-$("#brand").onclick=()=>show(user?"spaces":"auth");$("#googleBtn").onclick=signInGoogle;$("#magicBtn").onclick=sendMagic;$("#allSpacesBack").onclick=()=>show("spaces");$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=async()=>{await renderInbox();show("inbox")};$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#saveProfile").onclick=saveProfile;$("#signOut").onclick=()=>client.auth.signOut();
+$("#brand").onclick=()=>show(user?"spaces":"auth");$("#googleBtn").onclick=signInGoogle;$("#magicBtn").onclick=sendMagic;$("#allSpacesBack").onclick=()=>show("spaces");$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=openInboxDrawer;$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#saveProfile").onclick=saveProfile;$("#signOut").onclick=()=>client.auth.signOut();
 $("#add").onclick=()=>{renderTypes();$("#capture").classList.add("show")};$("#cancelEntry").onclick=()=>$("#capture").classList.remove("show");$("#saveEntry").onclick=addEntry;$("#replyBtn").onclick=addReply;
 $("#createSpaceBtn").onclick=createSpace;$("#cancelSpace").onclick=()=>$("#newSpaceModal").classList.remove("show");$("#joinSpaceBtn").onclick=joinSpace;$("#cancelJoin").onclick=()=>$("#joinSpaceModal").classList.remove("show");
 $("#currentSpace").onclick=()=>{renderSwitcher();$("#spaceSwitcher").classList.add("show")};$("#switchAllSpaces").onclick=()=>{$("#spaceSwitcher").classList.remove("show");show("spaces")};$("#spaceSwitcher").onclick=e=>{if(e.target===$("#spaceSwitcher")[0])$("#spaceSwitcher").classList.remove("show")};
@@ -636,6 +775,12 @@ $("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=async()=>{lang=b.dataset.lang;applyLang();await client.from("profiles").update({interface_language:lang}).eq("id",user.id)});
 
 
+
+$("#closeInboxDrawer").onclick=closeInboxDrawer;
+$("#inboxUnreadFilter").onclick=()=>{inboxFilter="unread";renderInboxDrawer()};
+$("#inboxAllFilter").onclick=()=>{inboxFilter="all";renderInboxDrawer()};
+$("#inboxDrawerLayer").addEventListener("click",e=>{if(e.target===$("#inboxDrawerLayer"))closeInboxDrawer()});
+
 $("#editEntryBtn").onclick=openEntryEditor;
 $("#cancelEditEntry").onclick=()=>$("#editEntryModal").classList.remove("show");
 $("#saveEditEntry").onclick=saveEntryEdit;
@@ -649,7 +794,7 @@ $("#confirmDeleteAccount").onclick=deleteOwnAccount;
 document.querySelectorAll(".overlay,.sheet").forEach(layer=>{
   layer.addEventListener("click",e=>{if(e.target===layer)layer.classList.remove("show")});
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAllTransient()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAllTransient();closeInboxDrawer()}});
 window.addEventListener("popstate",async e=>{
   if(!user)return;
   const r=e.state?.potluckRoute;
