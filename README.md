@@ -1,12 +1,11 @@
-# Potluck — V0.8
+# Potluck — V0.9
 
-Static frontend prototype. No authentication, database, or real privacy enforcement is connected yet.
+Frontend interaction prototype.
 
-## V0.8 focus
-- Removed space controls from global screens such as Inbox/Profile.
-- Rewrote Korean interface copy as product UX copy in polite Korean rather than literal translation.
-- Reduced the trace detail from a blog-like Conversation section to a lightweight inline reply thread.
-- Inbox rows are interactive return paths into the exact space/person/trace.
-- Kept English/Korean interface switching separate from user-written content.
+V0.9 fixes reversible navigation and adds in-space switching:
+- All spaces ↔ Space ↔ Person ↔ Trace back paths
+- Active space pill opens a space switcher
+- Switch directly between spaces without returning home
+- Inbox deep links restore the correct space context
 
-Open `index.html` or deploy the repository to Vercel.
+Still mock-only: no authentication, persistence, real notifications, membership authorization, or privacy enforcement.

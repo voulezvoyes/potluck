@@ -41,19 +41,19 @@
 </section>
 
 <section class="screen" id="week">
-<button class="back" onclick="go('spaces')" data-i18n="allSpaces">← All spaces</button>
+<button class="back" onclick="backToSpaces()" data-i18n="allSpaces">← All spaces</button>
 <div class="head"><div><div class="eyebrow">Sep 1 — 7</div><h1 class="title" data-i18n="ourWeek">Our week</h1></div><div class="sub" data-i18n="weekSub">A quick look at what everyone brought this week.</div></div>
 <div class="week-grid" id="weekGrid"></div>
 </section>
 
 <section class="screen" id="person">
-<button class="back" onclick="go('week')" data-i18n="backWeek">← Our week</button>
+<button class="back" onclick="backToWeek()" data-i18n="backWeek">← Our week</button>
 <div class="head"><div><div class="eyebrow" data-i18n="thisWeek">This week</div><h1 class="title" id="personName"></h1></div><div class="sub" data-i18n="personSub">Their week, grouped by what they made, learned, thought about, or got stuck on.</div></div>
 <div id="categories"></div>
 </section>
 
 <section class="screen" id="detail">
-<button class="back" onclick="go('person')" data-i18n="backPerson">← Back to week</button>
+<button class="back" onclick="backToPerson()" data-i18n="backPerson">← Back to week</button>
 <div class="detail"><div class="eyebrow" id="detailMeta"></div><div class="detailcopy" id="detailCopy"></div><div class="comments"><div id="comments"></div><div class="reply"><textarea id="replyText" data-ph="replyPh" placeholder="Write a reply…"></textarea><button class="pill" id="reply" data-i18n="reply">Reply</button></div></div></div>
 </section>
 
@@ -74,6 +74,13 @@
 </div>
 
 <div class="overlay" id="capture"><div class="modal"><div class="eyebrow" id="captureSpace"></div><h2 data-i18n="whatHappened">What happened?</h2><div class="types" id="typeBtns"></div><textarea id="entry" data-ph="entryPh" placeholder="A small thing…"></textarea><div class="modal-actions"><button class="pill" id="cancel" data-i18n="cancel">Cancel</button><button class="primary" id="save" data-i18n="bringIt">Bring it</button></div></div></div>
+
+<div class="sheet" id="spaceSwitcher"><div class="panel">
+  <div class="eyebrow" style="padding:9px 10px" data-i18n="switchSpace">Switch space</div>
+  <div id="spaceSwitchList"></div>
+  <div class="sep"></div>
+  <button class="menu" id="allSpacesBtn"><span data-i18n="allSpacesMenu">All spaces</span><span>→</span></button>
+</div></div>
 <div class="sheet" id="spaceActions"><div class="panel"><div class="eyebrow" id="spaceActionName" style="padding:9px 10px"></div><button class="menu" id="invite"><span data-i18n="invite">Invite people</span><span>→</span></button><button class="menu" id="members"><span data-i18n="members">Members</span><span id="memberN"></span></button><button class="menu" id="rename"><span data-i18n="rename">Rename space</span><span>→</span></button><div class="sep"></div><button class="menu" id="leave"><span data-i18n="leave">Leave space</span></button></div></div>
 <script>
 const types=["Made","Learned","Thought","Stuck"];
@@ -132,13 +139,30 @@ const spaces=[
 ];
 let currentSpace=0,currentPerson=0,currentItem=0,selectedType="Thought";
 const copy={
-en:{private:"Private space",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",privacyNote:"Posts are visible only to members of the space where they were shared.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",bringIt:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply"},
+en:{private:"Private space",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",privacyNote:"Posts are visible only to members of the space where they were shared.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",bringIt:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",switchSpace:"Switch space",allSpacesMenu:"All spaces"},
 ko:{private:"비공개 공간",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",privacyNote:"기록은 공유한 공간의 멤버에게만 공개됩니다.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에는 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",bringIt:"올리기",invite:"멤버 초대",members:"멤버",rename:"공간 이름 변경",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"함께 남긴 것",newReply:"새 답글"}};
 let lang="en",lastMain="spaces";
 const $=s=>document.querySelector(s);
 function t(k){return copy[lang][k]||k}
 function applyLang(){document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));renderSpaces();if($("#week").classList.contains("active"))renderWeek();if($("#person").classList.contains("active"))renderPerson();renderInbox()}
 function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$("#"+id).classList.add("active");if(["spaces","week","person","detail"].includes(id))lastMain=id;const inside=["week","person","detail"].includes(id);$("#currentSpace").style.display=inside?"block":"none";$("#spaceMenu").style.display=inside?"grid":"none";$("#add").style.display=inside?"block":"none";window.scrollTo(0,0)}
+function backToSpaces(){renderSpaces();go("spaces")}
+function backToWeek(){renderWeek();go("week")}
+function backToPerson(){renderPerson();go("person")}
+function renderSpaceSwitcher(){
+  $("#spaceSwitchList").innerHTML=spaces.map((s,i)=>`<button class="menu" onclick="switchSpaceFromHeader(${i})"><span>${s.name}</span><span class="small">${i===currentSpace?"✓":""}</span></button>`).join("");
+}
+window.switchSpaceFromHeader=i=>{
+  currentSpace=i;
+  $("#currentSpace").textContent=spaces[i].name;
+  $("#captureSpace").textContent=spaces[i].name;
+  $("#spaceActionName").textContent=spaces[i].name;
+  $("#memberN").textContent=spaces[i].members.length;
+  $("#spaceSwitcher").classList.remove("show");
+  renderWeek();
+  go("week");
+}
+
 const unread=[{space:0,person:0,item:0,who:"Min",text:"The archive angle still feels like the difference to me.",time:"2h"},{space:0,person:2,item:0,who:"June",text:"Same problem. Want to compare outlines?",time:"Yesterday"}];
 function renderSpaces(){$("#spaceGrid").innerHTML=spaces.map((s,i)=>{const names=s.members.map(m=>m.name).join(" · ");const first=s.members[0]?.items[0];const n=unread.filter(x=>x.space===i).length;return `<button class="space-card" onclick="openSpace(${i})"><div class="space-name">${s.name}</div><div class="members">${names}</div><div class="space-preview">${first?.text||""}</div><div class="space-foot"><span>${s.members.length} ${lang==="ko"?"명":"people"}</span><span class="${n?"unread":""}">${n?n+" "+t("newReply"):""}</span></div></button>`}).join("")+`<button class="space-card" onclick="alert('Mock only — backend next.')"><div class="space-name">+ ${lang==="ko"?"새 공간":"New space"}</div><div class="members">${lang==="ko"?"친구 그룹 만들기 또는 참여":"Create or join a friend group"}</div></button>`}
 window.openSpace=i=>{currentSpace=i;$("#currentSpace").textContent=spaces[i].name;$("#captureSpace").textContent=spaces[i].name;$("#spaceActionName").textContent=spaces[i].name;$("#memberN").textContent=spaces[i].members.length;renderWeek();go("week")}
@@ -149,13 +173,13 @@ function renderPerson(){let p=spaces[currentSpace].members[currentPerson];$("#pe
 window.openDetail=i=>{currentItem=i;let p=spaces[currentSpace].members[currentPerson],x=p.items[i];$("#detailMeta").textContent=`${p.name} · ${t(x.type)} · Sep 3`;$("#detailCopy").textContent=x.text;renderComments();go("detail")}
 function renderComments(){let x=spaces[currentSpace].members[currentPerson].items[currentItem];$("#comments").innerHTML=x.comments.length?x.comments.map(c=>{let parts=c.split(": ");let who=parts.shift();return `<div class="comment"><span class="comment-name">${who}</span><span>${parts.join(": ")}</span></div>`}).join(""):`<div class="muted" style="padding:12px 0">${lang==="ko"?"아직 답글이 없습니다.":"No replies yet."}</div>`}
 function renderInbox(){$("#inboxList").innerHTML=unread.map((n,i)=>{let s=spaces[n.space],p=s.members[n.person],x=p.items[n.item];return `<button class="notice" onclick="openNotice(${i})"><span class="dot"></span><span><div class="notice-title">${lang==="ko"?n.who+"님이 답글을 남겼습니다":n.who+" replied"} · ${s.name}</div><div class="notice-preview">“${x.text}” — ${n.text}</div></span><span class="notice-time">${n.time}</span></button>`}).join("")}
-window.openNotice=i=>{let n=unread[i];currentSpace=n.space;currentPerson=n.person;currentItem=n.item;$("#currentSpace").textContent=spaces[currentSpace].name;openDetail(currentItem)}
-$("#brand").onclick=()=>go("spaces");$("#inboxBtn").onclick=()=>{renderInbox();go("inbox")};$("#profileBtn").onclick=()=>go("profile");
+window.openNotice=i=>{let n=unread[i];currentSpace=n.space;currentPerson=n.person;currentItem=n.item;$("#currentSpace").textContent=spaces[currentSpace].name;$("#captureSpace").textContent=spaces[currentSpace].name;$("#spaceActionName").textContent=spaces[currentSpace].name;$("#memberN").textContent=spaces[currentSpace].members.length;openDetail(currentItem)}
+$("#brand").onclick=()=>backToSpaces();$("#currentSpace").onclick=()=>{renderSpaceSwitcher();$("#spaceSwitcher").classList.add("show")};$("#inboxBtn").onclick=()=>{renderInbox();go("inbox")};$("#profileBtn").onclick=()=>go("profile");
 $("#add").onclick=()=>{$("#capture").classList.add("show");$("#typeBtns").innerHTML=types.map(x=>`<button class="pill ${x===selectedType?"active":""}" onclick="pick('${x}')">${t(x)}</button>`).join("")};
 window.pick=x=>{selectedType=x;$("#typeBtns").innerHTML=types.map(y=>`<button class="pill ${y===selectedType?"active":""}" onclick="pick('${y}')">${t(y)}</button>`).join("")};
 $("#cancel").onclick=()=>$("#capture").classList.remove("show");$("#save").onclick=()=>{let v=$("#entry").value.trim();if(!v)return;let me=spaces[currentSpace].members.find(m=>m.name==="James")||spaces[currentSpace].members[0];me.items.unshift({type:selectedType,text:v,comments:[]});$("#entry").value="";$("#capture").classList.remove("show");renderWeek()};
 $("#reply").onclick=()=>{let v=$("#replyText").value.trim();if(!v)return;spaces[currentSpace].members[currentPerson].items[currentItem].comments.push((lang==="ko"?"나":"You")+": "+v);$("#replyText").value="";renderComments()};
-$("#spaceMenu").onclick=()=>$("#spaceActions").classList.add("show");$("#spaceActions").onclick=e=>{if(e.target===$("#spaceActions")[0])$("#spaceActions").classList.remove("show")};
+$("#spaceMenu").onclick=()=>$("#spaceActions").classList.add("show");$("#spaceActions").onclick=e=>{if(e.target===$("#spaceActions")[0])$("#spaceActions").classList.remove("show")};$("#spaceSwitcher").onclick=e=>{if(e.target===$("#spaceSwitcher")[0])$("#spaceSwitcher").classList.remove("show")};$("#allSpacesBtn").onclick=()=>{$("#spaceSwitcher").classList.remove("show");backToSpaces()};
 $("#invite").onclick=()=>alert("Mock: invite link copied.");$("#members").onclick=()=>alert(spaces[currentSpace].members.map(m=>m.name).join(", "));$("#rename").onclick=()=>{let n=prompt("Rename",spaces[currentSpace].name);if(n){spaces[currentSpace].name=n;$("#spaceActions").classList.remove("show");$("#currentSpace").textContent=n;renderSpaces()}};$("#leave").onclick=()=>alert("Mock only.");
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;applyLang()});
 applyLang();go("spaces");

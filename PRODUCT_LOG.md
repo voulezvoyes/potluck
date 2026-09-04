@@ -26,3 +26,28 @@ The global header leaked space-specific controls onto screens where they had no 
 
 ### Still mock-only
 Authentication, persistence, invitations, membership authorization, unread state, and privacy enforcement still require a backend (planned: Supabase).
+
+
+## V0.9 — Sep 3, 2026
+
+### Navigation repair
+
+Two navigation gaps remained in V0.8:
+
+1. Breadcrumb-style back actions depended on previously rendered screens rather than restoring the destination screen's state.
+2. The active space name functioned as a label, so users could not move directly between spaces from inside a space.
+
+### Decisions
+
+- Back actions now explicitly rebuild and navigate to their destination:
+  - Trace → Person week
+  - Person week → Space week
+  - Space week → All spaces
+- The active space pill is now a space switcher.
+- Switching spaces from the header immediately opens that space's weekly view.
+- The switcher also provides a direct return to All spaces.
+- The `•••` control remains exclusively for actions on the current space; switching and managing a space stay separate.
+- Inbox deep links now restore the full active-space context before opening a trace.
+
+This keeps the primary navigation reversible:
+`All spaces ↔ Space ↔ Person ↔ Trace`.
