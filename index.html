@@ -1,186 +1,226 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Potluck</title>
 <style>
 @font-face{font-family:Pretendard;src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');font-weight:400;font-display:swap}
 @font-face{font-family:Pretendard;src:url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');font-weight:600;font-display:swap}
 @font-face{font-family:Chosun;src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');font-display:swap}
-:root{--bg:#f7f7f4;--paper:#fff;--ink:#171717;--muted:#77736d;--line:#deddd8;--soft:#efeee9;--accent:#c95f43;--max:1080px}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink)}body,button,input,textarea{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input,textarea{font:inherit;color:inherit}button{cursor:pointer}
-.app{width:min(var(--max),calc(100% - 96px));margin:auto;padding:26px 0 80px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:56px}.brand{font-size:22px;font-weight:600;border:0;background:none;padding:0}.actions{display:flex;gap:8px;align-items:center}.icon,.pill,.primary{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:10px 14px}.icon{width:40px;height:40px;padding:0;display:grid;place-items:center;position:relative}.primary{background:var(--accent);border-color:var(--accent);color:#fff}.badge{position:absolute;right:-2px;top:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:20px;background:var(--accent);color:white;font-size:10px;display:grid;place-items:center}
-.screen{display:none}.screen.active{display:block}.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.muted,.small{color:var(--muted);font-size:12px}.title{font-family:Chosun,serif;font-weight:400;font-size:40px;line-height:1.1;letter-spacing:-.02em;margin:6px 0}.head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.sub{max-width:430px;color:var(--muted);font-size:14px;line-height:1.55}
+:root{--bg:#f7f7f4;--paper:#fff;--ink:#171717;--muted:#77736d;--line:#deddd8;--soft:#efeee9;--accent:#c95f43;--danger:#a13c2d;--max:1080px}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink)}body,button,input,textarea{font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input,textarea{font:inherit;color:inherit}button{cursor:pointer}.hidden{display:none!important}
+.app{width:min(var(--max),calc(100% - 96px));margin:auto;padding:26px 0 80px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:56px}.brand{font-size:22px;font-weight:600;border:0;background:none;padding:0}.actions{display:flex;gap:8px;align-items:center}.icon,.pill,.primary{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:10px 14px}.icon{width:40px;height:40px;padding:0;display:grid;place-items:center;position:relative}.primary{background:var(--accent);border-color:var(--accent);color:#fff}.danger{color:var(--danger)}.badge{position:absolute;right:-2px;top:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:20px;background:var(--accent);color:#fff;font-size:10px;display:grid;place-items:center}.screen{display:none}.screen.active{display:block}.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.muted,.small{color:var(--muted);font-size:12px}.title{font-family:Chosun,serif;font-weight:400;font-size:40px;line-height:1.1;letter-spacing:-.02em;margin:6px 0}.head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.sub{max-width:430px;color:var(--muted);font-size:14px;line-height:1.55}
+.auth{max-width:520px;margin:12vh auto 0}.auth h1{font-family:Chosun,serif;font-weight:400;font-size:48px;margin:0 0 12px}.auth p{color:var(--muted);line-height:1.6}.authbox{margin-top:28px;border-top:1px solid var(--line);padding-top:24px}.field{display:grid;gap:7px;margin:16px 0}.field label{font-size:12px;color:var(--muted)}.field input{padding:12px;border:1px solid var(--line);background:var(--paper);border-radius:10px;width:100%}.notice{font-size:12px;color:var(--muted);line-height:1.55;margin-top:18px}.notice a{color:inherit}
 .space-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.space-card{border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:20px;text-align:left;min-height:180px;display:flex;flex-direction:column}.space-name{font-size:19px;font-weight:600}.members{font-size:12px;color:var(--muted);margin:7px 0 24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.space-preview{font-size:15px;line-height:1.48;margin-top:auto;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.space-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.unread{color:var(--accent);font-weight:600}
 .week-grid{display:grid;grid-template-columns:repeat(3,1fr);column-gap:34px}.person{border:0;background:transparent;text-align:left;padding:24px 0 28px;border-bottom:1px solid var(--line)}.person-name{font-size:20px;font-weight:600;margin-bottom:18px}.trace-type{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}.trace{font-size:17px;line-height:1.48;min-height:76px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.trace-foot{font-size:12px;color:var(--muted);margin-top:12px}
-.back{border:0;background:none;padding:0;margin:0 0 28px;color:var(--muted)}.category{display:grid;grid-template-columns:145px 1fr;gap:28px;padding:24px 0;border-top:1px solid var(--line)}.row{width:100%;border:0;background:none;text-align:left;padding:12px 0;border-top:1px solid var(--line);font-size:17px;line-height:1.52}.row:first-child{border-top:0;padding-top:0}.rowmeta{font-size:11px;color:var(--muted);margin-top:5px}.detail{max-width:760px;margin:auto}.detailcopy{font-size:28px;line-height:1.5;letter-spacing:-.018em;margin:18px 0 34px}.comments{border-top:1px solid var(--line);padding-top:8px}.comment{padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.55}.comment-name{font-weight:600;margin-right:7px}.reply{display:flex;gap:8px;margin-top:12px;align-items:flex-end}.reply textarea,.modal textarea{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:11px 12px;line-height:1.5;resize:vertical}.reply textarea{flex:1;min-height:46px;max-height:110px}.reply .pill{padding:10px 14px}
-.inbox-list{max-width:760px}.notice{width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;padding:18px 0;display:grid;grid-template-columns:10px 1fr auto;gap:14px}.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);margin-top:7px}.notice-title{font-size:15px;line-height:1.45}.notice-preview{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.45}.notice-time{font-size:11px;color:var(--muted)}
-.profile{max-width:680px;margin:auto}.field{display:grid;gap:7px;margin:20px 0}.field label{font-size:12px;color:var(--muted)}.field input{padding:12px;border:1px solid var(--line);background:var(--paper);border-radius:10px}.lang{display:flex;gap:8px}.lang button.active{background:var(--ink);color:white;border-color:var(--ink)}
-.overlay,.sheet{position:fixed;inset:0;display:none;background:rgba(20,20,18,.22);z-index:20}.overlay{place-items:center;padding:20px}.show{display:grid}.sheet.show{display:block}.modal{width:min(560px,100%);background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px}.modal h2{font-family:Chosun,serif;font-size:29px;font-weight:400;margin:4px 0 18px}.modal textarea{width:100%;min-height:145px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.types button.active{background:var(--ink);color:white;border-color:var(--ink)}
-.panel{position:absolute;right:max(24px,calc((100vw - var(--max))/2));top:78px;width:min(340px,calc(100% - 48px));background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 12px 36px #0001}.menu{width:100%;border:0;background:none;border-radius:9px;padding:11px 10px;text-align:left;display:flex;justify-content:space-between}.menu:hover{background:var(--soft)}.sep{height:1px;background:var(--line);margin:7px 0}.privacy{margin-top:36px;padding:18px 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.55}
+.back{border:0;background:none;padding:0;margin:0 0 28px;color:var(--muted)}.category{display:grid;grid-template-columns:145px 1fr;gap:28px;padding:24px 0;border-top:1px solid var(--line)}.row{width:100%;border:0;background:none;text-align:left;padding:12px 0;border-top:1px solid var(--line);font-size:17px;line-height:1.52}.row:first-child{border-top:0;padding-top:0}.rowmeta{font-size:11px;color:var(--muted);margin-top:5px}.detail{max-width:760px;margin:auto}.detailcopy{font-size:28px;line-height:1.5;letter-spacing:-.018em;margin:18px 0 30px}.thread{border-top:1px solid var(--line);padding-top:14px}.reply-item{display:grid;grid-template-columns:90px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.55}.reply-item:first-child{border-top:0}.reply-name{font-weight:600}.reply{display:flex;gap:10px;margin-top:14px}.reply textarea,.modal textarea{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:13px 14px;line-height:1.55;resize:vertical}.reply textarea{flex:1;min-height:60px}
+.inbox-list{max-width:780px}.inbox-item{width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;padding:18px 0;display:grid;grid-template-columns:10px 1fr auto;gap:14px}.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);margin-top:7px}.inbox-title{font-size:15px;line-height:1.45}.inbox-preview{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.45}.inbox-time{font-size:11px;color:var(--muted)}
+.profile{max-width:680px;margin:auto}.lang{display:flex;gap:8px}.lang button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.overlay,.sheet{position:fixed;inset:0;display:none;background:rgba(20,20,18,.22);z-index:20}.overlay{place-items:center;padding:20px}.overlay.show{display:grid}.sheet.show{display:block}.modal{width:min(560px,100%);background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px}.modal h2{font-family:Chosun,serif;font-size:29px;font-weight:400;margin:4px 0 18px}.modal textarea{width:100%;min-height:130px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.types button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.panel{position:absolute;right:max(24px,calc((100vw - var(--max))/2));top:78px;width:min(350px,calc(100% - 48px));background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 12px 36px #0001}.menu{width:100%;border:0;background:none;border-radius:9px;padding:11px 10px;text-align:left;display:flex;justify-content:space-between;gap:10px}.menu:hover{background:var(--soft)}.sep{height:1px;background:var(--line);margin:7px 0}.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em}.status{font-size:13px;margin-top:12px;line-height:1.5}.error{color:var(--danger)}.success{color:#35704a}
 @media(max-width:900px){.app{width:calc(100% - 40px)}.space-grid,.week-grid{grid-template-columns:repeat(2,1fr)}.head{align-items:flex-start;flex-direction:column}.panel{right:20px}}
-@media(max-width:620px){.app{width:calc(100% - 28px);padding-top:18px}.top{margin-bottom:34px}.brand{font-size:19px}.actions{gap:5px}.space-grid{grid-template-columns:1fr}.week-grid{grid-template-columns:repeat(2,1fr);column-gap:18px}.title{font-size:34px}.category{grid-template-columns:1fr;gap:12px}.detailcopy{font-size:22px}.reply{flex-direction:column}.pill.space-current{max-width:118px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.primary{font-size:0}.primary:after{content:'+';font-size:20px}.icon{width:38px;height:38px}}
+@media(max-width:620px){.app{width:calc(100% - 28px);padding-top:18px}.top{margin-bottom:34px}.brand{font-size:19px}.actions{gap:5px}.space-grid{grid-template-columns:1fr}.week-grid{grid-template-columns:repeat(2,1fr);column-gap:18px}.title{font-size:34px}.category{grid-template-columns:1fr;gap:12px}.detailcopy{font-size:22px}.reply{flex-direction:column}.pill.space-current{max-width:118px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.primary{font-size:0}.primary:after{content:'+';font-size:20px}.icon{width:38px;height:38px}.reply-item{grid-template-columns:70px 1fr}}
 </style>
-</head><body>
+</head>
+<body>
 <div class="app">
 <header class="top">
-<button class="brand" id="brand">Potluck</button>
-<div class="actions">
-<button class="pill space-current" id="currentSpace" style="display:none"></button>
-<button class="icon" id="spaceMenu" style="display:none">•••</button>
-<button class="primary" id="add" style="display:none" data-i18n="bring">Bring something</button>
-<button class="icon" id="inboxBtn">⌁<span class="badge" id="badge">2</span></button>
-<button class="icon" id="profileBtn">J</button>
-</div>
+  <button class="brand" id="brand">Potluck</button>
+  <div class="actions" id="signedActions">
+    <button class="pill space-current hidden" id="currentSpace"></button>
+    <button class="icon hidden" id="spaceMenu">•••</button>
+    <button class="primary hidden" id="add" data-i18n="bring">Bring something</button>
+    <button class="icon" id="inboxBtn">⌁<span class="badge hidden" id="badge">0</span></button>
+    <button class="icon" id="profileBtn">J</button>
+  </div>
 </header>
 
-<section class="screen active" id="spaces">
-<div class="head"><div><div class="eyebrow" data-i18n="private">Private by default</div><h1 class="title" data-i18n="yourSpaces">Your spaces</h1></div><div class="sub" data-i18n="spacesSub">Choose the group you want to catch up with. Only members of a space can see what is shared there.</div></div>
-<div class="space-grid" id="spaceGrid"></div>
-<div class="privacy" data-i18n="privacyNote">Potluck is designed for small private groups. Your posts stay inside the space where you shared them.</div>
+<section class="screen active" id="boot"><div class="auth"><h1>Potluck</h1><p>Loading…</p></div></section>
+
+<section class="screen" id="setup">
+  <div class="auth"><div class="eyebrow">Setup required</div><h1>Connect Supabase</h1>
+  <p>This build is ready for a real backend, but <code>config.js</code> still contains placeholder values.</p>
+  <div class="notice">Open <strong>SETUP.md</strong>, create a Supabase project, run <strong>supabase-schema.sql</strong>, then paste the Project URL and publishable key into <strong>config.js</strong>.</div></div>
+</section>
+
+<section class="screen" id="auth">
+  <div class="auth"><div class="eyebrow" data-i18n="private">Private space</div><h1>Potluck</h1>
+  <p data-i18n="authSub">A small private place to keep up with the people you actually care about.</p>
+  <div class="authbox"><div class="field"><label data-i18n="email">Email</label><input id="emailInput" type="email" autocomplete="email" placeholder="you@example.com"></div>
+  <button class="primary" id="magicBtn" data-i18n="sendLink">Send sign-in link</button><div class="status" id="authStatus"></div></div>
+  <div class="notice" data-i18n="privacyShort">Your entries are visible only to members of the space where you share them.</div>
+  </div>
+</section>
+
+<section class="screen" id="spaces">
+  <div class="head"><div><div class="eyebrow" data-i18n="private">Private space</div><h1 class="title" data-i18n="yourSpaces">Spaces</h1></div><div class="sub" data-i18n="spacesSub">Choose a space to see what your friends brought this week.</div></div>
+  <div class="space-grid" id="spaceGrid"></div>
 </section>
 
 <section class="screen" id="week">
-<button class="back" onclick="backToSpaces()" data-i18n="allSpaces">← All spaces</button>
-<div class="head"><div><div class="eyebrow">Sep 1 — 7</div><h1 class="title" data-i18n="ourWeek">Our week</h1></div><div class="sub" data-i18n="weekSub">A quick look at what everyone brought this week.</div></div>
-<div class="week-grid" id="weekGrid"></div>
+  <button class="back" id="allSpacesBack" data-i18n="allSpaces">← All spaces</button>
+  <div class="head"><div><div class="eyebrow" id="weekRange"></div><h1 class="title" data-i18n="ourWeek">Our week</h1></div><div class="sub" data-i18n="weekSub">A quick look at what everyone brought this week.</div></div>
+  <div class="week-grid" id="weekGrid"></div>
 </section>
 
 <section class="screen" id="person">
-<button class="back" onclick="backToWeek()" data-i18n="backWeek">← Our week</button>
-<div class="head"><div><div class="eyebrow" data-i18n="thisWeek">This week</div><h1 class="title" id="personName"></h1></div><div class="sub" data-i18n="personSub">Their week, grouped by what they made, learned, thought about, or got stuck on.</div></div>
-<div id="categories"></div>
+  <button class="back" id="weekBack" data-i18n="backWeek">← Our week</button>
+  <div class="head"><div><div class="eyebrow" data-i18n="thisWeek">This week</div><h1 class="title" id="personName"></h1></div><div class="sub" data-i18n="personSub">Their week, grouped by what they made, learned, thought about, or got stuck on.</div></div>
+  <div id="categories"></div>
 </section>
 
 <section class="screen" id="detail">
-<button class="back" onclick="backToPerson()" data-i18n="backPerson">← Back to week</button>
-<div class="detail"><div class="eyebrow" id="detailMeta"></div><div class="detailcopy" id="detailCopy"></div><div class="comments"><div id="comments"></div><div class="reply"><textarea id="replyText" data-ph="replyPh" placeholder="Write a reply…"></textarea><button class="pill" id="reply" data-i18n="reply">Reply</button></div></div></div>
+  <button class="back" id="personBack" data-i18n="backPerson">← Back to week</button>
+  <div class="detail"><div class="eyebrow" id="detailMeta"></div><div class="detailcopy" id="detailCopy"></div>
+  <div class="thread"><div id="replies"></div><div class="reply"><textarea id="replyText" data-ph="replyPh" placeholder="Write a reply…"></textarea><button class="pill" id="replyBtn" data-i18n="reply">Reply</button></div></div></div>
 </section>
 
 <section class="screen" id="inbox">
-<button class="back" onclick="go(lastMain)" data-i18n="back">← Back</button>
-<div class="head"><div><div class="eyebrow" data-i18n="repliesInvites">Replies & invitations</div><h1 class="title" data-i18n="inbox">Inbox</h1></div><div class="sub" data-i18n="inboxSub">Only things that need a return path. No activity feed.</div></div>
-<div class="inbox-list" id="inboxList"></div>
+  <button class="back" id="inboxBack" data-i18n="back">← Back</button>
+  <div class="head"><div><div class="eyebrow" data-i18n="repliesInvites">Replies</div><h1 class="title" data-i18n="inbox">Inbox</h1></div><div class="sub" data-i18n="inboxSub">Replies that bring you back into a conversation.</div></div>
+  <div class="inbox-list" id="inboxList"></div>
 </section>
 
 <section class="screen" id="profile">
-<button class="back" onclick="go(lastMain)" data-i18n="back">← Back</button>
-<div class="profile"><div class="eyebrow" data-i18n="account">Account</div><h1 class="title" data-i18n="profile">Your profile</h1>
-<div class="field"><label data-i18n="name">Name</label><input value="James Kim"></div>
-<div class="field"><label data-i18n="handle">Handle</label><input value="@james"></div>
-<div class="field"><label data-i18n="language">Interface language</label><div class="lang"><button class="pill" data-lang="en">English</button><button class="pill" data-lang="ko">한국어</button></div></div>
-<div class="privacy" data-i18n="contentLang">Interface language does not translate posts. People can write in whichever language they prefer.</div></div>
+  <button class="back" id="profileBack" data-i18n="back">← Back</button>
+  <div class="profile"><div class="eyebrow" data-i18n="account">Account</div><h1 class="title" data-i18n="profile">Your profile</h1>
+    <div class="field"><label data-i18n="name">Name</label><input id="nameInput"></div>
+    <div class="field"><label data-i18n="handle">Handle</label><input id="handleInput"></div>
+    <button class="pill" id="saveProfile" data-i18n="save">Save</button>
+    <div class="field"><label data-i18n="language">Interface language</label><div class="lang"><button class="pill" data-lang="en">English</button><button class="pill" data-lang="ko">한국어</button></div></div>
+    <div class="notice" data-i18n="contentLang">Changing the interface language does not translate posts.</div>
+    <div class="sep" style="margin:28px 0 16px"></div><button class="pill danger" id="signOut" data-i18n="signOut">Sign out</button>
+  </div>
 </section>
 </div>
 
-<div class="overlay" id="capture"><div class="modal"><div class="eyebrow" id="captureSpace"></div><h2 data-i18n="whatHappened">What happened?</h2><div class="types" id="typeBtns"></div><textarea id="entry" data-ph="entryPh" placeholder="A small thing…"></textarea><div class="modal-actions"><button class="pill" id="cancel" data-i18n="cancel">Cancel</button><button class="primary" id="save" data-i18n="bringIt">Bring it</button></div></div></div>
+<div class="overlay" id="capture"><div class="modal"><div class="eyebrow" id="captureSpace"></div><h2 data-i18n="whatHappened">What happened this week?</h2><div class="types" id="typeBtns"></div><textarea id="entryText" data-ph="entryPh" placeholder="Share something…"></textarea><div class="modal-actions"><button class="pill" id="cancelEntry" data-i18n="cancel">Cancel</button><button class="primary" id="saveEntry" data-i18n="post">Post</button></div></div></div>
 
-<div class="sheet" id="spaceSwitcher"><div class="panel">
-  <div class="eyebrow" style="padding:9px 10px" data-i18n="switchSpace">Switch space</div>
-  <div id="spaceSwitchList"></div>
-  <div class="sep"></div>
-  <button class="menu" id="allSpacesBtn"><span data-i18n="allSpacesMenu">All spaces</span><span>→</span></button>
+<div class="overlay" id="newSpaceModal"><div class="modal"><div class="eyebrow" data-i18n="space">Space</div><h2 data-i18n="newSpace">New space</h2><div class="field"><label data-i18n="spaceName">Space name</label><input id="newSpaceName"></div><div class="modal-actions"><button class="pill" id="cancelSpace" data-i18n="cancel">Cancel</button><button class="primary" id="createSpaceBtn" data-i18n="create">Create</button></div></div></div>
+
+<div class="overlay" id="joinSpaceModal"><div class="modal"><div class="eyebrow" data-i18n="space">Space</div><h2 data-i18n="joinSpace">Join a space</h2><div class="field"><label data-i18n="inviteCode">Invite code</label><input id="joinCode" class="code" placeholder="ABC123"></div><div class="modal-actions"><button class="pill" id="cancelJoin" data-i18n="cancel">Cancel</button><button class="primary" id="joinSpaceBtn" data-i18n="join">Join</button></div></div></div>
+
+<div class="sheet" id="spaceSwitcher"><div class="panel"><div class="eyebrow" style="padding:9px 10px" data-i18n="switchSpace">Switch space</div><div id="spaceSwitchList"></div><div class="sep"></div><button class="menu" id="switchAllSpaces"><span data-i18n="allSpacesMenu">All spaces</span><span>→</span></button></div></div>
+
+<div class="sheet" id="spaceActions"><div class="panel"><div class="eyebrow" id="spaceActionName" style="padding:9px 10px"></div>
+  <button class="menu" id="inviteMenu"><span data-i18n="invite">Invite people</span><span>→</span></button>
+  <button class="menu" id="membersMenu"><span data-i18n="members">Members</span><span id="memberN"></span></button>
+  <button class="menu" id="renameMenu"><span data-i18n="rename">Rename space</span><span>→</span></button>
+  <div class="sep"></div><button class="menu danger" id="leaveMenu"><span data-i18n="leave">Leave space</span></button>
 </div></div>
-<div class="sheet" id="spaceActions"><div class="panel"><div class="eyebrow" id="spaceActionName" style="padding:9px 10px"></div><button class="menu" id="invite"><span data-i18n="invite">Invite people</span><span>→</span></button><button class="menu" id="members"><span data-i18n="members">Members</span><span id="memberN"></span></button><button class="menu" id="rename"><span data-i18n="rename">Rename space</span><span>→</span></button><div class="sep"></div><button class="menu" id="leave"><span data-i18n="leave">Leave space</span></button></div></div>
-<script>
-const types=["Made","Learned","Thought","Stuck"];
-const spaces=[
-  {
-    name:"Creative Circle",
-    members:[
-      {name:"James",initial:"J",items:[
-        {type:"Thought",text:"Why would anyone open this instead of a group chat?",comments:["Min: The archive angle still feels like the difference to me."]},
-        {type:"Made",text:"Reframed the weekly reflection prototype around shared traces.",comments:[]},
-        {type:"Learned",text:"A layout decision needs an information reason, not just a visual one.",comments:[]},
-        {type:"Stuck",text:"How much structure can the app add before posting starts to feel like work?",comments:[]},
-        {type:"Thought",text:"Maybe ambient accountability is a side effect, not the product promise.",comments:[]}
-      ]},
-      {name:"Min",initial:"M",items:[
-        {type:"Made",text:"Rewrote the opening of my portfolio case study.",comments:["James: Show me the new intro when you have time."]},
-        {type:"Thought",text:"Starting to wonder whether strategy fits me better than product.",comments:[]},
-        {type:"Learned",text:"Talked with a PM about how recruiting actually works.",comments:[]}
-      ]},
-      {name:"Alex",initial:"A",items:[
-        {type:"Stuck",text:"My thesis scope is still too broad.",comments:["June: Same problem. Want to compare outlines?"]},
-        {type:"Learned",text:"Built my first small RAG pipeline and finally understood retrieval.",comments:[]},
-        {type:"Made",text:"Finished a rough thesis research plan.",comments:[]}
-      ]},
-      {name:"June",initial:"J",items:[
-        {type:"Thought",text:"I keep wanting to combine physical installations with projection.",comments:[]},
-        {type:"Made",text:"Shot and edited a 40-second motion study.",comments:[]},
-        {type:"Learned",text:"Started learning Blender lighting.",comments:[]}
-      ]},
-      {name:"Dan",initial:"D",items:[
-        {type:"Made",text:"Sent two applications I had been sitting on.",comments:[]},
-        {type:"Stuck",text:"Interview prep keeps expanding instead of getting more focused.",comments:[]}
-      ]},
-      {name:"Chris",initial:"C",items:[
-        {type:"Thought",text:"What would a portfolio look like if it showed unfinished thinking too?",comments:[]},
-        {type:"Made",text:"Started collecting references for a new personal site.",comments:[]},
-        {type:"Learned",text:"Read about context collapse and smaller-audience sharing.",comments:[]}
-      ]}
-    ]
-  },
-  {
-    name:"USC Friends",
-    members:[
-      {name:"James",initial:"J",items:[{type:"Learned",text:"One critique changed how I’m framing the whole project.",comments:[]}]},
-      {name:"Maya",initial:"M",items:[{type:"Made",text:"Built the first pass of my studio prototype.",comments:[]}]},
-      {name:"Eli",initial:"E",items:[{type:"Thought",text:"I might switch my research direction before midterm.",comments:[]}]}
-    ]
-  },
-  {
-    name:"Career Crew",
-    members:[
-      {name:"James",initial:"J",items:[{type:"Thought",text:"I need to stop treating every possible role as equally plausible.",comments:[]}]},
-      {name:"Noah",initial:"N",items:[{type:"Made",text:"Sent the application I kept rewriting for two weeks.",comments:[]}]}
-    ]
-  }
-];
-let currentSpace=0,currentPerson=0,currentItem=0,selectedType="Thought";
-const copy={
-en:{private:"Private space",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",privacyNote:"Posts are visible only to members of the space where they were shared.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",bringIt:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",switchSpace:"Switch space",allSpacesMenu:"All spaces"},
-ko:{private:"비공개 공간",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",privacyNote:"기록은 공유한 공간의 멤버에게만 공개됩니다.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에는 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",bringIt:"올리기",invite:"멤버 초대",members:"멤버",rename:"공간 이름 변경",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"함께 남긴 것",newReply:"새 답글"}};
-let lang="en",lastMain="spaces";
-const $=s=>document.querySelector(s);
-function t(k){return copy[lang][k]||k}
-function applyLang(){document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));renderSpaces();if($("#week").classList.contains("active"))renderWeek();if($("#person").classList.contains("active"))renderPerson();renderInbox()}
-function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$("#"+id).classList.add("active");if(["spaces","week","person","detail"].includes(id))lastMain=id;const inside=["week","person","detail"].includes(id);$("#currentSpace").style.display=inside?"block":"none";$("#spaceMenu").style.display=inside?"grid":"none";$("#add").style.display=inside?"block":"none";window.scrollTo(0,0)}
-function backToSpaces(){renderSpaces();go("spaces")}
-function backToWeek(){renderWeek();go("week")}
-function backToPerson(){renderPerson();go("person")}
-function renderSpaceSwitcher(){
-  $("#spaceSwitchList").innerHTML=spaces.map((s,i)=>`<button class="menu" onclick="switchSpaceFromHeader(${i})"><span>${s.name}</span><span class="small">${i===currentSpace?"✓":""}</span></button>`).join("");
-}
-window.switchSpaceFromHeader=i=>{
-  currentSpace=i;
-  $("#currentSpace").textContent=spaces[i].name;
-  $("#captureSpace").textContent=spaces[i].name;
-  $("#spaceActionName").textContent=spaces[i].name;
-  $("#memberN").textContent=spaces[i].members.length;
-  $("#spaceSwitcher").classList.remove("show");
-  renderWeek();
-  go("week");
-}
 
-const unread=[{space:0,person:0,item:0,who:"Min",text:"The archive angle still feels like the difference to me.",time:"2h"},{space:0,person:2,item:0,who:"June",text:"Same problem. Want to compare outlines?",time:"Yesterday"}];
-function renderSpaces(){$("#spaceGrid").innerHTML=spaces.map((s,i)=>{const names=s.members.map(m=>m.name).join(" · ");const first=s.members[0]?.items[0];const n=unread.filter(x=>x.space===i).length;return `<button class="space-card" onclick="openSpace(${i})"><div class="space-name">${s.name}</div><div class="members">${names}</div><div class="space-preview">${first?.text||""}</div><div class="space-foot"><span>${s.members.length} ${lang==="ko"?"명":"people"}</span><span class="${n?"unread":""}">${n?n+" "+t("newReply"):""}</span></div></button>`}).join("")+`<button class="space-card" onclick="alert('Mock only — backend next.')"><div class="space-name">+ ${lang==="ko"?"새 공간":"New space"}</div><div class="members">${lang==="ko"?"친구 그룹 만들기 또는 참여":"Create or join a friend group"}</div></button>`}
-window.openSpace=i=>{currentSpace=i;$("#currentSpace").textContent=spaces[i].name;$("#captureSpace").textContent=spaces[i].name;$("#spaceActionName").textContent=spaces[i].name;$("#memberN").textContent=spaces[i].members.length;renderWeek();go("week")}
-function hint(p,f){let rest=[...new Set(p.items.filter(x=>x!==f).map(x=>t(x.type)))];return rest.length?`${t("also")}: ${rest.join(" · ")}`:""}
-function renderWeek(){$("#weekGrid").innerHTML=spaces[currentSpace].members.map((p,i)=>{let f=p.items[0];let r=f?.comments?.length||0;return `<button class="person" onclick="openPerson(${i})"><div class="person-name">${p.name}</div><div class="trace-type">${t(f.type)}</div><div class="trace">${f.text}</div><div class="trace-foot">${r?`${r} ${t("newReply")} · `:""}${hint(p,f)}</div></button>`}).join("")}
-window.openPerson=i=>{currentPerson=i;renderPerson();go("person")}
-function renderPerson(){let p=spaces[currentSpace].members[currentPerson];$("#personName").textContent=p.name;$("#categories").innerHTML=types.map(type=>{let arr=p.items.map((x,idx)=>({...x,idx})).filter(x=>x.type===type);return `<section class="category"><div><div class="eyebrow">${t(type)}</div><div class="small">${arr.length||""}</div></div><div>${arr.length?arr.map(x=>`<button class="row" onclick="openDetail(${x.idx})">${x.text}<div class="rowmeta">${x.comments.length?x.comments.length+" "+t("newReply"):""}</div></button>`).join(""):`<div class="muted">${lang==="ko"?"이번 주엔 아직 없어.":"Nothing here this week."}</div>`}</div></section>`}).join("")}
-window.openDetail=i=>{currentItem=i;let p=spaces[currentSpace].members[currentPerson],x=p.items[i];$("#detailMeta").textContent=`${p.name} · ${t(x.type)} · Sep 3`;$("#detailCopy").textContent=x.text;renderComments();go("detail")}
-function renderComments(){let x=spaces[currentSpace].members[currentPerson].items[currentItem];$("#comments").innerHTML=x.comments.length?x.comments.map(c=>{let parts=c.split(": ");let who=parts.shift();return `<div class="comment"><span class="comment-name">${who}</span><span>${parts.join(": ")}</span></div>`}).join(""):`<div class="muted" style="padding:12px 0">${lang==="ko"?"아직 답글이 없습니다.":"No replies yet."}</div>`}
-function renderInbox(){$("#inboxList").innerHTML=unread.map((n,i)=>{let s=spaces[n.space],p=s.members[n.person],x=p.items[n.item];return `<button class="notice" onclick="openNotice(${i})"><span class="dot"></span><span><div class="notice-title">${lang==="ko"?n.who+"님이 답글을 남겼습니다":n.who+" replied"} · ${s.name}</div><div class="notice-preview">“${x.text}” — ${n.text}</div></span><span class="notice-time">${n.time}</span></button>`}).join("")}
-window.openNotice=i=>{let n=unread[i];currentSpace=n.space;currentPerson=n.person;currentItem=n.item;$("#currentSpace").textContent=spaces[currentSpace].name;$("#captureSpace").textContent=spaces[currentSpace].name;$("#spaceActionName").textContent=spaces[currentSpace].name;$("#memberN").textContent=spaces[currentSpace].members.length;openDetail(currentItem)}
-$("#brand").onclick=()=>backToSpaces();$("#currentSpace").onclick=()=>{renderSpaceSwitcher();$("#spaceSwitcher").classList.add("show")};$("#inboxBtn").onclick=()=>{renderInbox();go("inbox")};$("#profileBtn").onclick=()=>go("profile");
-$("#add").onclick=()=>{$("#capture").classList.add("show");$("#typeBtns").innerHTML=types.map(x=>`<button class="pill ${x===selectedType?"active":""}" onclick="pick('${x}')">${t(x)}</button>`).join("")};
-window.pick=x=>{selectedType=x;$("#typeBtns").innerHTML=types.map(y=>`<button class="pill ${y===selectedType?"active":""}" onclick="pick('${y}')">${t(y)}</button>`).join("")};
-$("#cancel").onclick=()=>$("#capture").classList.remove("show");$("#save").onclick=()=>{let v=$("#entry").value.trim();if(!v)return;let me=spaces[currentSpace].members.find(m=>m.name==="James")||spaces[currentSpace].members[0];me.items.unshift({type:selectedType,text:v,comments:[]});$("#entry").value="";$("#capture").classList.remove("show");renderWeek()};
-$("#reply").onclick=()=>{let v=$("#replyText").value.trim();if(!v)return;spaces[currentSpace].members[currentPerson].items[currentItem].comments.push((lang==="ko"?"나":"You")+": "+v);$("#replyText").value="";renderComments()};
-$("#spaceMenu").onclick=()=>$("#spaceActions").classList.add("show");$("#spaceActions").onclick=e=>{if(e.target===$("#spaceActions")[0])$("#spaceActions").classList.remove("show")};$("#spaceSwitcher").onclick=e=>{if(e.target===$("#spaceSwitcher")[0])$("#spaceSwitcher").classList.remove("show")};$("#allSpacesBtn").onclick=()=>{$("#spaceSwitcher").classList.remove("show");backToSpaces()};
-$("#invite").onclick=()=>alert("Mock: invite link copied.");$("#members").onclick=()=>alert(spaces[currentSpace].members.map(m=>m.name).join(", "));$("#rename").onclick=()=>{let n=prompt("Rename",spaces[currentSpace].name);if(n){spaces[currentSpace].name=n;$("#spaceActions").classList.remove("show");$("#currentSpace").textContent=n;renderSpaces()}};$("#leave").onclick=()=>alert("Mock only.");
-document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;applyLang()});
-applyLang();go("spaces");
-</script></body></html>
+<div class="overlay" id="inviteModal"><div class="modal"><div class="eyebrow" data-i18n="invite">Invite people</div><h2 id="inviteSpaceName"></h2><p class="muted" data-i18n="inviteHelp">Send this code or link to a friend.</p><div class="field"><label data-i18n="inviteCode">Invite code</label><input id="inviteCodeValue" class="code" readonly></div><button class="pill" id="copyInvite" data-i18n="copyLink">Copy invite link</button><div class="modal-actions"><button class="pill" id="closeInvite" data-i18n="close">Close</button></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+<script>
+const copy={
+en:{private:"Private space",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code"},
+ko:{private:"비공개 공간",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
+const types=["Made","Learned","Thought","Stuck"];
+let lang="en", client=null, user=null, profile=null, spaces=[], currentSpace=null,currentPerson=null,currentEntry=null,lastMain="spaces",selectedType="Thought";
+const $=s=>document.querySelector(s); const t=k=>copy[lang][k]||k;
+function configured(){return window.POTLUCK_CONFIG&&POTLUCK_CONFIG.supabaseUrl&&!POTLUCK_CONFIG.supabaseUrl.includes("YOUR_")&&POTLUCK_CONFIG.supabaseKey&&!POTLUCK_CONFIG.supabaseKey.includes("YOUR_")}
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$("#"+id).classList.add("active");if(["spaces","week","person","detail"].includes(id))lastMain=id;const inside=["week","person","detail"].includes(id);$("#currentSpace").classList.toggle("hidden",!inside);$("#spaceMenu").classList.toggle("hidden",!inside);$("#add").classList.toggle("hidden",!inside);window.scrollTo(0,0)}
+function applyLang(){document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));if(user){renderSpaces();if(currentSpace&&$("#week").classList.contains("active"))renderWeek();if(currentPerson&&$("#person").classList.contains("active"))renderPerson()}}
+function weekStart(){const d=new Date();const day=(d.getDay()+6)%7;d.setHours(0,0,0,0);d.setDate(d.getDate()-day);return d}
+function weekEnd(){const d=weekStart();d.setDate(d.getDate()+7);return d}
+function fmtRange(){const a=weekStart(),b=new Date(weekEnd().getTime()-86400000);return `${a.toLocaleDateString(lang==="ko"?"ko-KR":"en-US",{month:"short",day:"numeric"})} — ${b.toLocaleDateString(lang==="ko"?"ko-KR":"en-US",{month:"short",day:"numeric"})}`}
+async function boot(){
+ if(!configured()){show("setup");return}
+ client=supabase.createClient(POTLUCK_CONFIG.supabaseUrl,POTLUCK_CONFIG.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ const {data:{session}}=await client.auth.getSession(); user=session?.user||null;
+ client.auth.onAuthStateChange(async(_,session)=>{user=session?.user||null;if(user)await afterLogin();else show("auth")});
+ if(user)await afterLogin();else show("auth")
+}
+async function afterLogin(){
+ await ensureProfile(); lang=profile?.interface_language||"en";applyLang();$("#profileBtn").textContent=(profile?.display_name||user.email||"U")[0].toUpperCase();await loadSpaces();await refreshUnread();handleJoinLink();show("spaces")
+}
+async function ensureProfile(){
+ let {data}=await client.from("profiles").select("*").eq("id",user.id).maybeSingle();
+ if(!data){await client.from("profiles").insert({id:user.id,display_name:user.email.split("@")[0],handle:null});({data}=await client.from("profiles").select("*").eq("id",user.id).single())}
+ profile=data;$("#nameInput").value=profile.display_name||"";$("#handleInput").value=profile.handle||""
+}
+async function loadSpaces(){
+ const {data,error}=await client.from("space_members").select("space_id,role,spaces(id,name,invite_code,owner_id,created_at)").eq("user_id",user.id);
+ if(error){console.error(error);return}
+ spaces=(data||[]).map(r=>({...r.spaces,role:r.role}));
+ await Promise.all(spaces.map(async s=>{
+   const [{count:member_count},{data:latest},{count:unread_count}]=await Promise.all([
+     client.from("space_members").select("*",{count:"exact",head:true}).eq("space_id",s.id),
+     client.from("entries").select("id,body,created_at").eq("space_id",s.id).order("created_at",{ascending:false}).limit(1),
+     client.from("notifications").select("*",{count:"exact",head:true}).eq("user_id",user.id).eq("space_id",s.id).is("read_at",null)
+   ]);
+   s.member_count=member_count||0;s.latest=latest?.[0]||null;s.unread_count=unread_count||0;
+ }));
+ renderSpaces()
+}
+function renderSpaces(){
+ const cards=spaces.map((s,i)=>`<button class="space-card" onclick="openSpace('${s.id}')"><div class="space-name">${esc(s.name)}</div><div class="members">${s.member_count} ${lang==="ko"?t("people"):"people"}</div><div class="space-preview">${s.latest?esc(s.latest.body):t("noEntries")}</div><div class="space-foot"><span>${s.member_count} ${lang==="ko"?t("people"):"people"}</span><span class="${s.unread_count?"unread":""}">${s.unread_count?`${s.unread_count} ${t("newReply")}`:""}</span></div></button>`).join("");
+ $("#spaceGrid").innerHTML=cards+`<button class="space-card" id="createCard"><div class="space-name">+ ${t("createSpace")}</div><div class="members">${t("createSpace")}</div></button><button class="space-card" id="joinCard"><div class="space-name">+ ${t("joinWithCode")}</div><div class="members">${t("joinSpace")}</div></button>`;
+ $("#createCard").onclick=()=>$("#newSpaceModal").classList.add("show");$("#joinCard").onclick=()=>$("#joinSpaceModal").classList.add("show")
+}
+window.openSpace=async id=>{
+ currentSpace=spaces.find(s=>s.id===id);$("#currentSpace").textContent=currentSpace.name;$("#spaceActionName").textContent=currentSpace.name;$("#memberN").textContent=currentSpace.member_count;$("#captureSpace").textContent=currentSpace.name;$("#weekRange").textContent=fmtRange();await renderWeek();show("week")
+}
+async function renderWeek(){
+ const start=weekStart().toISOString(),end=weekEnd().toISOString();
+ const {data:members}=await client.from("space_members").select("user_id,profiles(id,display_name,handle)").eq("space_id",currentSpace.id);
+ const {data:entries}=await client.from("entries").select("id,author_id,type,body,created_at,replies(count)").eq("space_id",currentSpace.id).gte("created_at",start).lt("created_at",end).order("created_at",{ascending:false});
+ $("#weekGrid").innerHTML=(members||[]).map(m=>{
+   const p=m.profiles;const e=(entries||[]).find(x=>x.author_id===m.user_id);const replyCount=e?.replies?.[0]?.count||0;
+   return `<button class="person" onclick="openPerson('${m.user_id}')"><div class="person-name">${esc(p?.display_name||"Member")}</div>${e?`<div class="trace-type">${t(e.type)}</div><div class="trace">${esc(e.body)}</div><div class="trace-foot">${replyCount?`${replyCount} ${t("newReply")} · `:""}${new Date(e.created_at).toLocaleDateString()}</div>`:`<div class="muted">${t("noEntries")}</div>`}</button>`
+ }).join("")
+}
+window.openPerson=async uid=>{currentPerson=uid;await renderPerson();show("person")}
+async function renderPerson(){
+ const start=weekStart().toISOString(),end=weekEnd().toISOString();
+ const {data:p}=await client.from("profiles").select("id,display_name,handle").eq("id",currentPerson).single();$("#personName").textContent=p.display_name||"Member";
+ const {data:entries}=await client.from("entries").select("id,type,body,created_at,replies(count)").eq("space_id",currentSpace.id).eq("author_id",currentPerson).gte("created_at",start).lt("created_at",end).order("created_at");
+ $("#categories").innerHTML=types.map(type=>{const arr=(entries||[]).filter(e=>e.type===type);return `<section class="category"><div><div class="eyebrow">${t(type)}</div><div class="small">${arr.length||""}</div></div><div>${arr.length?arr.map(e=>`<button class="row" onclick="openEntry('${e.id}')">${esc(e.body)}<div class="rowmeta">${e.replies?.[0]?.count?`${e.replies[0].count} ${t("newReply")}`:""}</div></button>`).join(""):`<div class="muted">${t("noEntries")}</div>`}</div></section>`}).join("")
+}
+window.openEntry=async id=>{
+ const {data:e}=await client.from("entries").select("id,space_id,author_id,type,body,created_at,profiles:author_id(display_name)").eq("id",id).single();currentEntry=e;$("#detailMeta").textContent=`${e.profiles?.display_name||"Member"} · ${t(e.type)} · ${new Date(e.created_at).toLocaleDateString()}`;$("#detailCopy").textContent=e.body;await renderReplies();await client.from("notifications").update({read_at:new Date().toISOString()}).eq("user_id",user.id).eq("entry_id",id).is("read_at",null);await refreshUnread();show("detail")
+}
+async function renderReplies(){
+ const {data}=await client.from("replies").select("id,body,created_at,author_id,profiles:author_id(display_name)").eq("entry_id",currentEntry.id).order("created_at");
+ $("#replies").innerHTML=(data||[]).map(r=>`<div class="reply-item"><div class="reply-name">${esc(r.profiles?.display_name||"Member")}</div><div>${esc(r.body)}</div></div>`).join("")
+}
+async function renderInbox(){
+ const {data:notes,error}=await client.from("notifications").select("id,type,space_id,entry_id,actor_id,created_at,read_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(50);
+ if(error){console.error(error);return}
+ const actorIds=[...new Set((notes||[]).map(n=>n.actor_id).filter(Boolean))], entryIds=[...new Set((notes||[]).map(n=>n.entry_id).filter(Boolean))];
+ const [{data:actors},{data:entries}]=await Promise.all([actorIds.length?client.from("profiles").select("id,display_name").in("id",actorIds):Promise.resolve({data:[]}),entryIds.length?client.from("entries").select("id,body,space_id,author_id").in("id",entryIds):Promise.resolve({data:[]})]);
+ const amap=Object.fromEntries((actors||[]).map(a=>[a.id,a])),emap=Object.fromEntries((entries||[]).map(e=>[e.id,e]));
+ $("#inboxList").innerHTML=(notes||[]).map(n=>{const a=amap[n.actor_id],e=emap[n.entry_id],s=spaces.find(x=>x.id===n.space_id);return `<button class="inbox-item" onclick="openNotification('${n.id}','${n.space_id}','${n.entry_id}','${e?.author_id||""}')"><span class="${n.read_at?"":"dot"}"></span><span><div class="inbox-title">${esc(a?.display_name||"Someone")} ${lang==="ko"?t("replied"):"replied"} · ${esc(s?.name||"Space")}</div><div class="inbox-preview">“${esc(e?.body||"")}”</div></span><span class="inbox-time">${timeAgo(n.created_at)}</span></button>`}).join("")
+}
+window.openNotification=async(nid,sid,eid,authorId)=>{await client.from("notifications").update({read_at:new Date().toISOString()}).eq("id",nid).eq("user_id",user.id);await loadSpaces();currentSpace=spaces.find(s=>s.id===sid);currentPerson=authorId;$("#currentSpace").textContent=currentSpace.name;$("#spaceActionName").textContent=currentSpace.name;$("#memberN").textContent=currentSpace.member_count;await openEntry(eid)}
+async function refreshUnread(){const {count}=await client.from("notifications").select("*",{count:"exact",head:true}).eq("user_id",user.id).is("read_at",null);$("#badge").textContent=count||0;$("#badge").classList.toggle("hidden",!count)}
+async function createSpace(){const name=$("#newSpaceName").value.trim();if(!name)return;const {data,error}=await client.rpc("create_space",{p_name:name});if(error){alert(error.message);return}$("#newSpaceModal").classList.remove("show");$("#newSpaceName").value="";await loadSpaces();if(data)await openSpace(data)}
+async function joinSpace(){const code=$("#joinCode").value.trim();if(!code)return;const {data,error}=await client.rpc("join_space_by_code",{p_code:code});if(error){alert(error.message);return}$("#joinSpaceModal").classList.remove("show");$("#joinCode").value="";await loadSpaces();if(data)await openSpace(data)}
+async function saveProfile(){const name=$("#nameInput").value.trim(),handle=$("#handleInput").value.trim()||null;const {error}=await client.from("profiles").update({display_name:name,handle}).eq("id",user.id);if(error){alert(error.message);return}profile={...profile,display_name:name,handle};$("#profileBtn").textContent=(name||"U")[0].toUpperCase()}
+async function sendMagic(){const email=$("#emailInput").value.trim();if(!email)return;$("#authStatus").textContent="";const {error}=await client.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin+window.location.pathname}});$("#authStatus").textContent=error?error.message:(lang==="ko"?"이메일로 로그인 링크를 보냈습니다.":"Check your email for the sign-in link.");$("#authStatus").className="status "+(error?"error":"success")}
+async function addEntry(){const body=$("#entryText").value.trim();if(!body)return;const {error}=await client.from("entries").insert({space_id:currentSpace.id,author_id:user.id,type:selectedType,body});if(error){alert(error.message);return}$("#capture").classList.remove("show");$("#entryText").value="";await loadSpaces();currentSpace=spaces.find(s=>s.id===currentSpace.id);await renderWeek()}
+async function addReply(){const body=$("#replyText").value.trim();if(!body)return;const {error}=await client.from("replies").insert({entry_id:currentEntry.id,author_id:user.id,body});if(error){alert(error.message);return}$("#replyText").value="";await renderReplies()}
+function renderTypes(){$("#typeBtns").innerHTML=types.map(x=>`<button class="pill ${x===selectedType?"active":""}" onclick="pickType('${x}')">${t(x)}</button>`).join("")}window.pickType=x=>{selectedType=x;renderTypes()}
+function renderSwitcher(){$("#spaceSwitchList").innerHTML=spaces.map(s=>`<button class="menu" onclick="switchSpace('${s.id}')"><span>${esc(s.name)}</span><span>${currentSpace?.id===s.id?"✓":""}</span></button>`).join("")}window.switchSpace=async id=>{$("#spaceSwitcher").classList.remove("show");await openSpace(id)}
+function handleJoinLink(){const u=new URL(location.href),code=u.searchParams.get("join");if(code){$("#joinCode").value=code;$("#joinSpaceModal").classList.add("show")}}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function timeAgo(ts){const sec=(Date.now()-new Date(ts))/1000;if(sec<3600)return `${Math.max(1,Math.floor(sec/60))}m`;if(sec<86400)return `${Math.floor(sec/3600)}h`;return `${Math.floor(sec/86400)}d`}
+$("#brand").onclick=()=>show(user?"spaces":"auth");$("#magicBtn").onclick=sendMagic;$("#allSpacesBack").onclick=()=>show("spaces");$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=async()=>{await renderInbox();show("inbox")};$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#saveProfile").onclick=saveProfile;$("#signOut").onclick=()=>client.auth.signOut();
+$("#add").onclick=()=>{renderTypes();$("#capture").classList.add("show")};$("#cancelEntry").onclick=()=>$("#capture").classList.remove("show");$("#saveEntry").onclick=addEntry;$("#replyBtn").onclick=addReply;
+$("#createSpaceBtn").onclick=createSpace;$("#cancelSpace").onclick=()=>$("#newSpaceModal").classList.remove("show");$("#joinSpaceBtn").onclick=joinSpace;$("#cancelJoin").onclick=()=>$("#joinSpaceModal").classList.remove("show");
+$("#currentSpace").onclick=()=>{renderSwitcher();$("#spaceSwitcher").classList.add("show")};$("#switchAllSpaces").onclick=()=>{$("#spaceSwitcher").classList.remove("show");show("spaces")};$("#spaceSwitcher").onclick=e=>{if(e.target===$("#spaceSwitcher")[0])$("#spaceSwitcher").classList.remove("show")};
+$("#spaceMenu").onclick=()=>$("#spaceActions").classList.add("show");$("#spaceActions").onclick=e=>{if(e.target===$("#spaceActions")[0])$("#spaceActions").classList.remove("show")};
+$("#inviteMenu").onclick=()=>{$("#spaceActions").classList.remove("show");$("#inviteSpaceName").textContent=currentSpace.name;$("#inviteCodeValue").value=currentSpace.invite_code;$("#inviteModal").classList.add("show")};
+$("#copyInvite").onclick=async()=>{const url=`${location.origin}${location.pathname}?join=${encodeURIComponent(currentSpace.invite_code)}`;await navigator.clipboard.writeText(url);$("#copyInvite").textContent=lang==="ko"?"복사됨":"Copied"};
+$("#closeInvite").onclick=()=>$("#inviteModal").classList.remove("show");
+$("#membersMenu").onclick=async()=>{const {data}=await client.from("space_members").select("profiles(display_name)").eq("space_id",currentSpace.id);alert((data||[]).map(x=>x.profiles?.display_name||"Member").join("\n"))};
+$("#renameMenu").onclick=async()=>{if(currentSpace.owner_id!==user.id){alert(lang==="ko"?"공간 소유자만 이름을 변경할 수 있습니다.":"Only the space owner can rename it.");return}const name=prompt(lang==="ko"?"새 공간 이름":"New space name",currentSpace.name);if(!name)return;const {error}=await client.from("spaces").update({name:name.trim()}).eq("id",currentSpace.id);if(error){alert(error.message);return}$("#spaceActions").classList.remove("show");await loadSpaces();await openSpace(currentSpace.id)};
+$("#leaveMenu").onclick=async()=>{if(!confirm(lang==="ko"?"이 공간에서 나갈까요?":"Leave this space?"))return;const {error}=await client.rpc("leave_space",{p_space_id:currentSpace.id});if(error){alert(error.message);return}$("#spaceActions").classList.remove("show");currentSpace=null;await loadSpaces();show("spaces")};
+document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=async()=>{lang=b.dataset.lang;applyLang();await client.from("profiles").update({interface_language:lang}).eq("id",user.id)});
+applyLang();boot();
+</script>
+</body>
+</html>
