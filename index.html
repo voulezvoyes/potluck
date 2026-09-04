@@ -93,6 +93,23 @@
 .icon{width:38px;height:38px}
 .reply-item{grid-template-columns:70px 1fr}
 }
+
+/* V1.5.1 */
+body{-webkit-user-select:none;user-select:none}
+input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text}
+
+.entry-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.entry-actions{display:flex;gap:10px;flex:0 0 auto}
+.text-action{border:0;background:transparent;padding:3px 0;font:inherit;font-size:13px;color:var(--muted);cursor:pointer}
+.text-action:hover{color:var(--ink)}
+.text-action.danger{color:#a64231}
+.edit-types{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}
+.edit-types .active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.danger-zone{margin-top:34px;padding-top:20px;border-top:1px solid var(--line)}
+.danger-zone h3{font-size:15px;margin:0 0 6px}
+.danger-zone p{font-size:13px;color:var(--muted);line-height:1.55;max-width:560px}
+.confirm-line{font-size:13px;color:var(--muted);margin-bottom:8px}
+
 </style>
 </head>
 <body>
@@ -189,7 +206,14 @@
 
 <section class="screen" id="detail">
   <button class="back" id="personBack" data-i18n="backPerson">← Back to week</button>
-  <div class="detail"><div class="eyebrow" id="detailMeta"></div><div class="detailcopy" id="detailCopy"></div>
+  <div class="detail">
+  <div class="entry-head">
+    <div class="eyebrow" id="detailMeta"></div>
+    <div class="entry-actions hidden" id="entryActions">
+      <button class="text-action" id="editEntryBtn" data-i18n="edit">Edit</button>
+    </div>
+  </div>
+  <div class="detailcopy" id="detailCopy"></div>
   <div class="thread"><div id="replies"></div><div class="reply"><textarea id="replyText" data-ph="replyPh" placeholder="Write a reply…"></textarea><button class="pill" id="replyBtn" data-i18n="reply">Reply</button></div></div></div>
 </section>
 
@@ -207,7 +231,13 @@
     <button class="pill" id="saveProfile" data-i18n="save">Save</button>
     <div class="field"><label data-i18n="language">Interface language</label><div class="lang"><button class="pill" data-lang="en">English</button><button class="pill" data-lang="ko">한국어</button></div></div>
     <div class="notice" data-i18n="contentLang">Changing the interface language does not translate posts.</div>
-    <div class="sep" style="margin:28px 0 16px"></div><button class="pill danger" id="signOut" data-i18n="signOut">Sign out</button>
+    <div class="sep" style="margin:28px 0 16px"></div>
+    <button class="pill" id="signOut" data-i18n="signOut">Sign out</button>
+    <div class="danger-zone">
+      <h3 data-i18n="deleteAccount">Delete account</h3>
+      <p data-i18n="deleteAccountBody">Delete your Potluck data and account permanently.</p>
+      <button class="pill danger" id="openDeleteAccount" data-i18n="deleteAccount">Delete account</button>
+    </div>
   </div>
 </section>
 </div>
@@ -242,17 +272,73 @@
 
 <div class="overlay" id="inviteModal"><div class="modal"><div class="eyebrow" data-i18n="invite">Invite people</div><h2 id="inviteSpaceName"></h2><p class="muted" data-i18n="inviteHelp">Send this code or link to a friend.</p><div class="field"><label data-i18n="inviteCode">Invite code</label><input id="inviteCodeValue" class="code" readonly></div><button class="pill" id="copyInvite" data-i18n="copyLink">Copy invite link</button><div class="modal-actions"><button class="pill" id="closeInvite" data-i18n="close">Close</button></div></div></div>
 
+
+<div class="overlay" id="editEntryModal"><div class="modal">
+  <div class="eyebrow" data-i18n="editEntry">Edit entry</div>
+  <h2 data-i18n="editEntryTitle">Update what you brought</h2>
+  <div class="edit-types" id="editTypes"></div>
+  <textarea id="editEntryBody" rows="7"></textarea>
+  <div class="modal-actions">
+    <button class="text-action danger" id="deleteEntryBtn" data-i18n="deleteEntry">Delete entry</button>
+    <span style="flex:1"></span>
+    <button class="pill" id="cancelEditEntry" data-i18n="cancel">Cancel</button>
+    <button class="primary" id="saveEditEntry" data-i18n="saveChanges">Save changes</button>
+  </div>
+  <div class="status" id="editEntryStatus"></div>
+</div></div>
+
+<div class="overlay" id="deleteAccountModal"><div class="modal">
+  <div class="eyebrow" data-i18n="deleteAccount">Delete account</div>
+  <h2 data-i18n="deleteAccountTitle">Permanently delete your account?</h2>
+  <p class="muted" data-i18n="deleteAccountLong">Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.</p>
+  <div class="field" style="margin-top:18px">
+    <label id="deleteEmailLabel"></label>
+    <input id="deleteEmailInput" type="email" autocomplete="off">
+  </div>
+  <div class="modal-actions">
+    <button class="pill" id="cancelDeleteAccount" data-i18n="cancel">Cancel</button>
+    <button class="primary" id="confirmDeleteAccount" disabled data-i18n="deleteAccount">Delete account</button>
+  </div>
+  <div class="status" id="deleteAccountStatus"></div>
+</div></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./config.js"></script>
 <script>
 const copy={
-en:{private:"Private space",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
-ko:{private:"비공개 공간",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
+en:{private:"Private space",edit:"Edit",editEntry:"Edit entry",editEntryTitle:"Update what you brought",deleteEntry:"Delete entry",saveChanges:"Save changes",deleteAccount:"Delete account",deleteAccountTitle:"Permanently delete your account?",deleteAccountBody:"Delete your Potluck data and account permanently.",deleteAccountLong:"Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
+ko:{private:"비공개 공간",edit:"수정",editEntry:"기록 수정",editEntryTitle:"가져온 기록 수정하기",deleteEntry:"기록 삭제",saveChanges:"변경 저장",deleteAccount:"계정 삭제",deleteAccountTitle:"계정을 영구 삭제할까요?",deleteAccountBody:"Potluck의 내 데이터와 계정을 영구 삭제합니다.",deleteAccountLong:"내 기록, 답글, 멤버십, 알림, 내가 만든 공간, 프로필과 로그인 계정이 모두 영구 삭제됩니다.",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
 const types=["Made","Learned","Thought","Stuck"];
 let lang="en", client=null, user=null, profile=null, spaces=[], currentSpace=null,currentPerson=null,currentEntry=null,lastMain="spaces",selectedType="Thought";
 const $=s=>document.querySelector(s); const t=k=>copy[lang][k]||k;
 function configured(){return window.POTLUCK_CONFIG&&POTLUCK_CONFIG.supabaseUrl&&!POTLUCK_CONFIG.supabaseUrl.includes("YOUR_")&&POTLUCK_CONFIG.supabaseKey&&!POTLUCK_CONFIG.supabaseKey.includes("YOUR_")}
-function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$("#"+id).classList.add("active");if(["spaces","week","person","detail"].includes(id))lastMain=id;const inside=["week","person","detail"].includes(id);$("#currentSpace").classList.toggle("hidden",!inside);$("#spaceMenu").classList.toggle("hidden",!inside);$("#add").classList.toggle("hidden",!inside);window.scrollTo(0,0)}
+let restoringRoute=false;
+function routeFor(id){
+  const r={screen:id};
+  if(currentSpace?.id)r.spaceId=currentSpace.id;
+  if(currentPerson)r.personId=currentPerson;
+  if(currentEntry?.id)r.entryId=currentEntry.id;
+  return r;
+}
+function writeRoute(id,replace=false){
+  if(!user||restoringRoute||["auth","setup"].includes(id))return;
+  const r=routeFor(id);
+  localStorage.setItem(`potluck:lastRoute:${user.id}`,JSON.stringify(r));
+  const state={potluckRoute:r};
+  if(replace)history.replaceState(state,"",location.href);
+  else history.pushState(state,"",location.href);
+}
+function show(id,{route=true,replace=false}={}){
+  document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+  $("#"+id).classList.add("active");
+  if(["spaces","week","person","detail","inbox","profile"].includes(id))lastMain=id;
+  const inside=["week","person","detail"].includes(id);
+  $("#currentSpace").classList.toggle("hidden",!inside);
+  $("#spaceMenu").classList.toggle("hidden",!inside);
+  $("#add").classList.toggle("hidden",!inside);
+  if(route)writeRoute(id,replace);
+  window.scrollTo(0,0);
+}
 function applyLang(){document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));$("#onboardBack").onclick=()=>show("spaces");
 $("#skipOnboard").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week")};
 $("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week");renderTypes();$("#capture").classList.add("show")};
@@ -268,8 +354,46 @@ async function boot(){
  if(user)await afterLogin();else show("auth")
 }
 async function afterLogin(){
- await ensureProfile(); lang=profile?.interface_language||"en";applyLang();$("#profileBtn").textContent=(profile?.display_name||user.email||"U")[0].toUpperCase();await loadSpaces();await refreshUnread();const pendingJoin=new URL(location.href).searchParams.get("join");if(pendingJoin){await handleJoinLink()}else{show("spaces")}
+ await ensureProfile(); lang=profile?.interface_language||"en";applyLang();$("#profileBtn").textContent=(profile?.display_name||user.email||"U")[0].toUpperCase();await loadSpaces();await refreshUnread();const pendingJoin=new URL(location.href).searchParams.get("join");if(pendingJoin){await handleJoinLink()}else{await restoreLastRoute()}
 }
+
+async function restoreRoute(r){
+  if(!r||!r.screen){show("spaces",{route:false});return}
+  restoringRoute=true;
+  try{
+    if(r.screen==="spaces"){currentSpace=null;currentPerson=null;currentEntry=null;show("spaces",{route:false});return}
+    if(r.screen==="inbox"){await renderInbox();show("inbox",{route:false});return}
+    if(r.screen==="profile"){show("profile",{route:false});return}
+    if(!r.spaceId){show("spaces",{route:false});return}
+    currentSpace=spaces.find(s=>s.id===r.spaceId);
+    if(!currentSpace){show("spaces",{route:false});return}
+    $("#currentSpace").textContent=currentSpace.name;
+    $("#spaceActionName").textContent=currentSpace.name;
+    $("#memberN").textContent=currentSpace.member_count;
+    $("#captureSpace").textContent=currentSpace.name;
+    $("#weekRange").textContent=fmtRange();
+    if(r.screen==="week"||r.screen==="onboarding"){
+      await renderWeek();show("week",{route:false});return;
+    }
+    if(r.personId){
+      currentPerson=r.personId;
+      if(r.screen==="person"){await renderPerson();show("person",{route:false});return}
+    }
+    if(r.entryId){
+      await openEntry(r.entryId,{route:false});return;
+    }
+    await renderWeek();show("week",{route:false});
+  }finally{restoringRoute=false}
+}
+async function restoreLastRoute(){
+  let r=history.state?.potluckRoute||null;
+  if(!r){
+    try{r=JSON.parse(localStorage.getItem(`potluck:lastRoute:${user.id}`)||"null")}catch{}
+  }
+  await restoreRoute(r);
+  history.replaceState({potluckRoute:routeFor(document.querySelector(".screen.active")?.id||"spaces")},"",location.href);
+}
+
 async function ensureProfile(){
  let {data}=await client.from("profiles").select("*").eq("id",user.id).maybeSingle();
  if(!data){await client.from("profiles").insert({id:user.id,display_name:user.email.split("@")[0],handle:null});({data}=await client.from("profiles").select("*").eq("id",user.id).single())}
@@ -338,8 +462,17 @@ async function renderPerson(){
  const {data:entries}=await client.from("entries").select("id,type,body,created_at,replies(count)").eq("space_id",currentSpace.id).eq("author_id",currentPerson).gte("created_at",start).lt("created_at",end).order("created_at");
  $("#categories").innerHTML=types.map(type=>{const arr=(entries||[]).filter(e=>e.type===type);return `<section class="category"><div><div class="eyebrow">${t(type)}</div><div class="small">${arr.length||""}</div></div><div>${arr.length?arr.map(e=>`<button class="row" onclick="openEntry('${e.id}')">${esc(e.body)}<div class="rowmeta">${e.replies?.[0]?.count?`${e.replies[0].count} ${t("newReply")}`:""}</div></button>`).join(""):`<div class="muted">${t("noEntries")}</div>`}</div></section>`}).join("")
 }
-window.openEntry=async id=>{
- const {data:e}=await client.from("entries").select("id,space_id,author_id,type,body,created_at,profiles:author_id(display_name)").eq("id",id).single();currentEntry=e;$("#detailMeta").textContent=`${e.profiles?.display_name||"Member"} · ${t(e.type)} · ${new Date(e.created_at).toLocaleDateString()}`;$("#detailCopy").textContent=e.body;await renderReplies();await client.from("notifications").update({read_at:new Date().toISOString()}).eq("user_id",user.id).eq("entry_id",id).is("read_at",null);await refreshUnread();show("detail")
+window.openEntry=async(id,opts={})=>{
+ const {data:e,error}=await client.from("entries").select("id,space_id,author_id,type,body,created_at,profiles:author_id(display_name)").eq("id",id).single();
+ if(error||!e){show("week",{route:opts.route!==false});return}
+ currentEntry=e;
+ $("#detailMeta").textContent=`${e.profiles?.display_name||"Member"} · ${t(e.type)} · ${new Date(e.created_at).toLocaleDateString()}`;
+ $("#detailCopy").textContent=e.body;
+ $("#entryActions").classList.toggle("hidden",e.author_id!==user.id);
+ await renderReplies();
+ await client.from("notifications").update({read_at:new Date().toISOString()}).eq("user_id",user.id).eq("entry_id",id).is("read_at",null);
+ await refreshUnread();
+ show("detail",{route:opts.route!==false})
 }
 async function renderReplies(){
  const {data}=await client.from("replies").select("id,body,created_at,author_id,profiles:author_id(display_name)").eq("entry_id",currentEntry.id).order("created_at");
@@ -423,6 +556,69 @@ async function handleJoinLink(){
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function timeAgo(ts){const sec=(Date.now()-new Date(ts))/1000;if(sec<3600)return `${Math.max(1,Math.floor(sec/60))}m`;if(sec<86400)return `${Math.floor(sec/3600)}h`;return `${Math.floor(sec/86400)}d`}
+
+let editType=null;
+function renderEditTypes(){
+  $("#editTypes").innerHTML=types.map(type=>`<button class="pill ${editType===type?"active":""}" data-edit-type="${type}">${t(type)}</button>`).join("");
+  document.querySelectorAll("[data-edit-type]").forEach(btn=>btn.onclick=()=>{editType=btn.dataset.editType;renderEditTypes()});
+}
+function openEntryEditor(){
+  if(!currentEntry||currentEntry.author_id!==user.id)return;
+  editType=currentEntry.type;
+  $("#editEntryBody").value=currentEntry.body||"";
+  $("#editEntryStatus").textContent="";
+  renderEditTypes();
+  $("#editEntryModal").classList.add("show");
+}
+async function saveEntryEdit(){
+  if(!currentEntry||currentEntry.author_id!==user.id)return;
+  const body=$("#editEntryBody").value.trim();if(!body)return;
+  const {data,error}=await client.from("entries").update({type:editType,body}).eq("id",currentEntry.id).eq("author_id",user.id).select("id,space_id,author_id,type,body,created_at").single();
+  if(error){$("#editEntryStatus").textContent=error.message;$("#editEntryStatus").className="status error";return}
+  currentEntry={...currentEntry,...data};
+  $("#detailCopy").textContent=currentEntry.body;
+  $("#detailMeta").textContent=`${profile?.display_name||"Member"} · ${t(currentEntry.type)} · ${new Date(currentEntry.created_at).toLocaleDateString()}`;
+  $("#editEntryModal").classList.remove("show");
+  if(currentSpace)await renderWeek();
+}
+async function deleteCurrentEntry(){
+  if(!currentEntry||currentEntry.author_id!==user.id)return;
+  if(!confirm(lang==="ko"?"이 기록을 삭제할까요? 되돌릴 수 없습니다.":"Delete this entry? This cannot be undone."))return;
+  const {error}=await client.from("entries").delete().eq("id",currentEntry.id).eq("author_id",user.id);
+  if(error){$("#editEntryStatus").textContent=error.message;$("#editEntryStatus").className="status error";return}
+  $("#editEntryModal").classList.remove("show");
+  currentEntry=null;
+  await renderPerson();
+  show("person");
+}
+function openDeleteAccountModal(){
+  const email=user?.email||"";
+  $("#deleteEmailLabel").textContent=lang==="ko"?`확인하려면 ${email} 입력`:`Type ${email} to confirm`;
+  $("#deleteEmailInput").value="";
+  $("#confirmDeleteAccount").disabled=true;
+  $("#deleteAccountStatus").textContent="";
+  $("#deleteAccountModal").classList.add("show");
+}
+async function deleteOwnAccount(){
+  const email=$("#deleteEmailInput").value.trim();
+  if(email!==(user?.email||""))return;
+  $("#confirmDeleteAccount").disabled=true;
+  $("#deleteAccountStatus").textContent=lang==="ko"?"계정 삭제 중...":"Deleting account...";
+  const {data:{session}}=await client.auth.getSession();
+  const res=await fetch(`${POTLUCK_CONFIG.supabaseUrl}/functions/v1/delete-account`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":`Bearer ${session?.access_token||""}`},
+    body:JSON.stringify({email})
+  });
+  const payload=await res.json().catch(()=>({}));
+  if(!res.ok){$("#deleteAccountStatus").textContent=payload.error||`HTTP ${res.status}`;$("#deleteAccountStatus").className="status error";$("#confirmDeleteAccount").disabled=false;return}
+  localStorage.removeItem(`potluck:lastRoute:${user.id}`);
+  await client.auth.signOut();
+  location.href=location.origin+location.pathname;
+}
+function closeTransient(el){el.classList.remove("show")}
+function closeAllTransient(){document.querySelectorAll(".overlay.show,.sheet.show").forEach(closeTransient)}
+
 $("#brand").onclick=()=>show(user?"spaces":"auth");$("#googleBtn").onclick=signInGoogle;$("#magicBtn").onclick=sendMagic;$("#allSpacesBack").onclick=()=>show("spaces");$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=async()=>{await renderInbox();show("inbox")};$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#saveProfile").onclick=saveProfile;$("#signOut").onclick=()=>client.auth.signOut();
 $("#add").onclick=()=>{renderTypes();$("#capture").classList.add("show")};$("#cancelEntry").onclick=()=>$("#capture").classList.remove("show");$("#saveEntry").onclick=addEntry;$("#replyBtn").onclick=addReply;
 $("#createSpaceBtn").onclick=createSpace;$("#cancelSpace").onclick=()=>$("#newSpaceModal").classList.remove("show");$("#joinSpaceBtn").onclick=joinSpace;$("#cancelJoin").onclick=()=>$("#joinSpaceModal").classList.remove("show");
@@ -438,6 +634,27 @@ $("#onboardBack").onclick=()=>show("spaces");
 $("#skipOnboard").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week")};
 $("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week");renderTypes();$("#capture").classList.add("show")};
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=async()=>{lang=b.dataset.lang;applyLang();await client.from("profiles").update({interface_language:lang}).eq("id",user.id)});
+
+
+$("#editEntryBtn").onclick=openEntryEditor;
+$("#cancelEditEntry").onclick=()=>$("#editEntryModal").classList.remove("show");
+$("#saveEditEntry").onclick=saveEntryEdit;
+$("#deleteEntryBtn").onclick=deleteCurrentEntry;
+$("#openDeleteAccount").onclick=openDeleteAccountModal;
+$("#cancelDeleteAccount").onclick=()=>$("#deleteAccountModal").classList.remove("show");
+$("#deleteEmailInput").oninput=()=>{$("#confirmDeleteAccount").disabled=$("#deleteEmailInput").value.trim()!==(user?.email||"")};
+$("#confirmDeleteAccount").onclick=deleteOwnAccount;
+
+/* Backdrop click closes overlays and sheets. */
+document.querySelectorAll(".overlay,.sheet").forEach(layer=>{
+  layer.addEventListener("click",e=>{if(e.target===layer)layer.classList.remove("show")});
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAllTransient()});
+window.addEventListener("popstate",async e=>{
+  if(!user)return;
+  const r=e.state?.potluckRoute;
+  if(r)await restoreRoute(r);
+});
 
 let deferredInstallPrompt=null;
 function isStandalone(){
