@@ -1,6 +1,6 @@
 {
-  "name": "Potluck",
-  "short_name": "Potluck",
+  "name": "potluck",
+  "short_name": "potluck",
   "description": "A private weekly exchange for small friend groups.",
   "start_url": "./",
   "scope": "./",

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Potluck</title>
+<title>potluck</title>
 <meta name="theme-color" content="#f7f7f4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -52,7 +52,7 @@
 .empty-space h3{font-family:Chosun,serif;font-weight:400;font-size:28px;margin:0 0 10px}
 .empty-space p{color:var(--muted);font-size:14px;line-height:1.6;max-width:560px}
 .first-cta{margin-top:16px}
-.install-note{max-width:680px;margin:24px 0 0;padding:16px 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px}
+.install-note{max-width:680px;margin:0 0 26px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px}
 .install-note-copy{font-size:13px;line-height:1.55;color:var(--muted)}
 .install-note strong{display:block;color:var(--ink);font-size:14px;margin-bottom:3px}
 .install-note button{flex:0 0 auto}
@@ -88,7 +88,7 @@
 <body>
 <div class="app">
 <header class="top">
-  <button class="brand" id="brand">Potluck</button>
+  <button class="brand" id="brand">potluck</button>
   <div class="actions" id="signedActions">
     <button class="pill space-current hidden" id="currentSpace"></button>
     <button class="icon hidden" id="spaceMenu">•••</button>
@@ -98,7 +98,7 @@
   </div>
 </header>
 
-<section class="screen active" id="boot"><div class="auth"><h1>Potluck</h1><p>Loading…</p></div></section>
+<section class="screen active" id="boot"><div class="auth"><h1>potluck</h1><p>Loading…</p></div></section>
 
 <section class="screen" id="setup">
   <div class="auth"><div class="eyebrow">Setup required</div><h1>Connect Supabase</h1>
@@ -107,7 +107,7 @@
 </section>
 
 <section class="screen" id="auth">
-  <div class="auth"><div class="eyebrow" data-i18n="private">Private space</div><h1>Potluck</h1>
+  <div class="auth"><div class="eyebrow" data-i18n="private">Private space</div><h1>potluck</h1>
   <p data-i18n="authSub">A small private place to keep up with the people you actually care about.</p>
   <div class="authbox"><div class="field"><label data-i18n="email">Email</label><input id="emailInput" type="email" autocomplete="email" placeholder="you@example.com"></div>
   <button class="primary" id="magicBtn" data-i18n="sendLink">Send sign-in link</button><div class="status" id="authStatus"></div></div>
@@ -117,11 +117,11 @@
 
 <section class="screen" id="spaces">
   <div class="head"><div><div class="eyebrow" data-i18n="private">Private space</div><h1 class="title" data-i18n="yourSpaces">Spaces</h1></div><div class="sub" data-i18n="spacesSub">Choose a space to see what your friends brought this week.</div></div>
-  <div class="space-grid" id="spaceGrid"></div>
   <div class="install-note hidden" id="installNote">
-    <div class="install-note-copy"><strong data-i18n="installTitle">Keep Potluck on your home screen</strong><span data-i18n="installBody">Open it like an app without hunting for the link again.</span></div>
+    <div class="install-note-copy"><strong data-i18n="installTitle">Keep potluck on your home screen</strong><span data-i18n="installBody">Open it like an app without hunting for the link again.</span></div>
     <button class="pill" id="installBtn" data-i18n="install">Install</button>
   </div>
+  <div class="space-grid" id="spaceGrid"></div>
 </section>
 
 <section class="screen" id="week">
@@ -184,11 +184,11 @@
 
 
 <div class="overlay" id="installModal"><div class="modal">
-  <div class="eyebrow" data-i18n="installPotluck">Install Potluck</div>
-  <h2 data-i18n="addHome">Add Potluck to your Home Screen</h2>
+  <div class="eyebrow" data-i18n="installPotluck">Install potluck</div>
+  <h2 data-i18n="addHome">Add potluck to your Home Screen</h2>
   <p class="install-sheet-copy" data-i18n="iosInstallIntro">On iPhone, Safari handles installation.</p>
   <ol class="install-steps">
-    <li data-i18n="iosStep1">1. Open Potluck in Safari.</li>
+    <li data-i18n="iosStep1">1. Open potluck in Safari.</li>
     <li data-i18n="iosStep2">2. Tap the Share button.</li>
     <li data-i18n="iosStep3">3. Choose “Add to Home Screen,” then confirm.</li>
   </ol>
@@ -216,7 +216,7 @@
 <script src="./config.js"></script>
 <script>
 const copy={
-en:{private:"Private space",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"Potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep Potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install Potluck",addHome:"Add Potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open Potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
+en:{private:"Private space",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
 ko:{private:"비공개 공간",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
 const types=["Made","Learned","Thought","Stuck"];
 let lang="en", client=null, user=null, profile=null, spaces=[], currentSpace=null,currentPerson=null,currentEntry=null,lastMain="spaces",selectedType="Thought";
@@ -396,6 +396,12 @@ $("#installBtn").onclick=async()=>{
   }
   if(isIOS()){
     $("#installModal").classList.add("show");
+    const intro=$("#installModal .install-sheet-copy");
+    if(intro && !isSafariIOS()){
+      intro.textContent=lang==="ko"
+        ?"iPhone에서는 이 페이지를 Safari로 연 뒤 홈 화면에 추가해야 합니다."
+        :"On iPhone, open this page in Safari first, then add it to your Home Screen.";
+    }
     return;
   }
   alert(lang==="ko"?"브라우저 메뉴에서 ‘앱 설치’ 또는 ‘홈 화면에 추가’를 선택해 주세요.":"Use your browser menu and choose Install app or Add to Home screen.");
