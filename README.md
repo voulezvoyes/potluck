@@ -1,8 +1,6 @@
-# Between — V0.3
+# Potluck — V0.4
+Lightweight shared weekly log prototype.
 
-Open `index.html`.
+V0.4: Potluck rename; Pretendard-first UI; ChosunIlbo Myungjo headline; lighter neutral palette; reduced card framing; “Bring something” capture action.
 
-This fixes the V0.2 JavaScript parsing bug and includes six populated mock member cards.
-Click any member to see the 2×2 Made / Learned / Thought / Stuck matrix, then click a trace to open its conversation.
-
-No backend is connected yet; data resets on refresh.
+Mock data only. Backend/auth/AI remain intentionally out of scope.

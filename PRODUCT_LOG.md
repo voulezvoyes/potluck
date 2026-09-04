@@ -36,3 +36,13 @@ If testing shows users repeatedly need two taps just to read what they care abou
 The first V0.2 file rendered the static shell but not the member cards because a JavaScript string in the mock dataset contained an unescaped apostrophe. The browser therefore stopped parsing the script before `renderHome()` ran.
 
 V0.3 fixes the dataset serialization and restores the six-person realistic demo state. No product decision changed; this was an implementation bug.
+
+## Sep 3, 2026 — V0.4
+
+Renamed the working product from **Between** to **Potluck**. The metaphor frames the social model as reciprocal small-group sharing: each person brings heterogeneous pieces of their week into a shared space without requiring equal volume or polish.
+
+The deployed V0.3 read too strongly as an editorial archive. V0.4 uses **Pretendard** for interface and log content and reserves **ChosunIlbo Myungjo** for the weekly headline. Rounded-card framing is reduced in favor of dividers and whitespace, with a lighter neutral palette and one restrained accent.
+
+The 3×2 group overview and person-level information architecture remain unchanged so the next test isolates visual-language changes rather than changing structure at the same time.
+
+Still unvalidated: whether the overview creates curiosity, whether the person layer earns its navigation step, and whether “Bring something” is clear without overextending the Potluck metaphor.
