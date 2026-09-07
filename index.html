@@ -188,6 +188,40 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 .archive-row-date{font-family:var(--serif);font-size:18px}
 .archive-row-count{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:4px}
 @media(max-width:600px){.week-nav{margin-bottom:24px}.week-date-range{font-size:17px}}
+
+/* V1.6 — identity + lighter posting */
+.avatar{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  font-size:20px;border:1px solid var(--line);background:var(--soft);flex:none
+}
+.avatar.sm{width:32px;height:32px;font-size:16px}
+.avatar.lg{width:72px;height:72px;font-size:34px}
+.avatar-picker{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin:12px 0 18px}
+.avatar-option{aspect-ratio:1;border:1px solid var(--line);border-radius:14px;background:var(--soft);font-size:25px;cursor:pointer}
+.avatar-option.active{outline:2px solid var(--ink);outline-offset:2px}
+.avatar-colors{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0 22px}
+.avatar-color{width:30px;height:30px;border-radius:50%;border:1px solid #0002;cursor:pointer}
+.avatar-color.active{outline:2px solid var(--ink);outline-offset:3px}
+.profile-identity{display:flex;gap:18px;align-items:center;margin:18px 0 26px}
+.profile-email{font-size:13px;color:var(--muted);margin-top:4px}
+.helper{font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px}
+.optional-label{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:17px 0 8px}
+.optional-label .eyebrow{margin:0}
+.label-clear{border:0;background:none;color:var(--muted);font:inherit;font-size:12px;cursor:pointer}
+.entry-stream{border-top:1px solid var(--line)}
+.stream-row{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;padding:18px 0;cursor:pointer}
+.stream-label{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.stream-body{font-family:Chosun,serif;font-size:21px;line-height:1.45}
+.stream-meta{font-size:11px;color:var(--muted);margin-top:8px}
+.person-headline{display:flex;align-items:center;gap:12px}
+.profile-setup{max-width:600px;margin:0 auto}
+.profile-setup-card{padding-top:26px;border-top:1px solid var(--line)}
+.profile-setup-card h1{font-family:Chosun,serif;font-size:42px;font-weight:400;margin:0 0 10px}
+.capture-copy{font-size:14px;color:var(--muted);line-height:1.55;margin:-8px 0 18px}
+@media(max-width:600px){
+  .avatar-picker{grid-template-columns:repeat(4,1fr)}
+  .stream-body{font-size:19px}
+}
 </style>
 </head>
 <body>
@@ -240,6 +274,28 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   </div>
 </section>
 
+
+<section class="screen" id="profileSetup">
+  <div class="profile-setup">
+    <div class="eyebrow">potluck</div>
+    <div class="profile-setup-card">
+      <h1 data-i18n="makeHome">Make yourself at home.</h1>
+      <p class="muted" data-i18n="setupIdentityBody">Choose how your friends will see you. Your email stays private.</p>
+      <div class="field">
+        <label data-i18n="whatCallYou">What should we call you?</label>
+        <input id="setupNameInput" maxlength="40">
+      </div>
+      <div class="field">
+        <label data-i18n="pickAvatar">Pick something that feels like you.</label>
+        <div class="avatar-picker" id="setupAvatarPicker"></div>
+        <div class="avatar-colors" id="setupAvatarColorPicker"></div>
+      </div>
+      <button class="primary" id="finishProfileSetup" data-i18n="continue">Continue</button>
+      <div class="status" id="profileSetupStatus"></div>
+    </div>
+  </div>
+</section>
+
 <section class="screen" id="spaces">
   <div class="head"><div><div class="eyebrow" data-i18n="private">Private space</div><h1 class="title" data-i18n="yourSpaces">Spaces</h1></div><div class="sub" data-i18n="spacesSub">Choose a space to see what your friends brought this week.</div></div>
   <div class="install-note hidden" id="installNote">
@@ -266,7 +322,7 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 
 <section class="screen" id="person">
   <button class="back" id="weekBack" data-i18n="backWeek">← Our week</button>
-  <div class="head"><div><div class="eyebrow" id="personWeekMeta"></div><h1 class="title" id="personName"></h1></div><div class="sub" data-i18n="personSub">Their week, grouped by what they made, learned, thought about, or got stuck on.</div></div>
+  <div class="head"><div><div class="eyebrow" id="personWeekMeta"></div><div class="person-headline"><div class="avatar" id="personAvatar">🌱</div><h1 class="title" id="personName"></h1></div></div><div class="sub" data-i18n="personSubV16">Everything they brought this week, in the order it arrived.</div></div>
   <div id="categories"></div>
 </section>
 
@@ -275,17 +331,11 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   <div class="onboard-wrap">
     <div class="eyebrow" data-i18n="firstTime">First time here</div>
     <div class="onboard-card">
-      <h2 data-i18n="onboardTitle">Bring one thing from your week.</h2>
-      <p data-i18n="onboardBody">Potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.</p>
-      <div class="onboard-types">
-        <div class="onboard-type"><strong data-i18n="Made">Made</strong><span class="muted" data-i18n="madeHelp">Something you made or worked on.</span></div>
-        <div class="onboard-type"><strong data-i18n="Learned">Learned</strong><span class="muted" data-i18n="learnedHelp">Something you figured out.</span></div>
-        <div class="onboard-type"><strong data-i18n="Thought">Thought</strong><span class="muted" data-i18n="thoughtHelp">Something that stayed on your mind.</span></div>
-        <div class="onboard-type"><strong data-i18n="Stuck">Stuck</strong><span class="muted" data-i18n="stuckHelp">Something you have not figured out yet.</span></div>
-      </div>
+      <h2 data-i18n="onboardTitleV16">Bring something to the table.</h2>
+      <p data-i18n="onboardBodyV16">Anything from your week is worth bringing. Add a label if it helps — or just leave it as it is.</p>
       <div class="onboard-actions">
         <button class="pill" id="skipOnboard" data-i18n="skip">Not now</button>
-        <button class="primary" id="firstBring" data-i18n="firstBring">Bring your first thing</button>
+        <button class="primary" id="firstBring" data-i18n="firstBringV16">Bring something</button>
       </div>
     </div>
   </div>
@@ -312,11 +362,38 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 
 <section class="screen" id="profile">
   <button class="back" id="profileBack" data-i18n="back">← Back</button>
-  <div class="profile"><div class="eyebrow" data-i18n="account">Account</div><h1 class="title" data-i18n="profile">Your profile</h1>
-    <div class="field"><label data-i18n="name">Name</label><input id="nameInput"></div>
-    <div class="field"><label data-i18n="handle">Handle</label><input id="handleInput"></div>
+  <div class="profile">
+    <div class="eyebrow" data-i18n="account">Account</div>
+    <h1 class="title" data-i18n="profile">Your profile</h1>
+    <div class="profile-identity">
+      <div class="avatar lg" id="profileAvatarPreview">🌱</div>
+      <div>
+        <div id="profileDisplayPreview" style="font-family:Chosun,serif;font-size:26px">Member</div>
+        <div class="profile-email" id="privateEmail"></div>
+        <div class="helper" data-i18n="emailPrivate">Only you can see your sign-in email.</div>
+      </div>
+    </div>
+    <div class="field">
+      <label data-i18n="displayName">Display name</label>
+      <input id="nameInput" maxlength="40">
+      <div class="helper" data-i18n="displayNameHelp">This is the name people in your spaces will see.</div>
+    </div>
+    <div class="field">
+      <label data-i18n="handleOptional">Handle · optional</label>
+      <input id="handleInput" maxlength="32" placeholder="@you">
+      <div class="helper" data-i18n="handleHelp">A short name people can recognize you by. You can leave this blank.</div>
+    </div>
+    <div class="field">
+      <label data-i18n="avatar">Avatar</label>
+      <div class="avatar-picker" id="profileAvatarPicker"></div>
+      <div class="avatar-colors" id="profileAvatarColorPicker"></div>
+    </div>
     <button class="pill" id="saveProfile" data-i18n="save">Save</button>
-    <div class="field"><label data-i18n="language">Interface language</label><div class="lang"><button class="pill" data-lang="en">English</button><button class="pill" data-lang="ko">한국어</button></div></div>
+    <div class="status" id="profileSaveStatus"></div>
+    <div class="field">
+      <label data-i18n="language">Interface language</label>
+      <div class="lang"><button class="pill" data-lang="en">English</button><button class="pill" data-lang="ko">한국어</button></div>
+    </div>
     <div class="notice" data-i18n="contentLang">Changing the interface language does not translate posts.</div>
     <div class="sep" style="margin:28px 0 16px"></div>
     <button class="pill" id="signOut" data-i18n="signOut">Sign out</button>
@@ -349,7 +426,22 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   <div class="archive-list" id="weekArchiveList"></div>
   <div class="modal-actions"><button class="pill" id="closeWeekArchive" data-i18n="close">Close</button></div>
 </div></div>
-<div class="overlay" id="capture"><div class="modal"><div class="eyebrow" id="captureSpace"></div><h2 data-i18n="whatHappened">What happened this week?</h2><div class="types" id="typeBtns"></div><textarea id="entryText" data-ph="entryPh" placeholder="Share something…"></textarea><div class="modal-actions"><button class="pill" id="cancelEntry" data-i18n="cancel">Cancel</button><button class="primary" id="saveEntry" data-i18n="post">Post</button></div></div></div>
+<div class="overlay" id="capture"><div class="modal">
+  <div class="eyebrow" id="captureSpace"></div>
+  <h2 data-i18n="bringTable">Bring something to the table.</h2>
+  <div class="capture-copy" data-i18n="anythingWorth">Anything from your week is worth bringing.</div>
+  <textarea id="entryText" data-ph="entryPhV16" placeholder="What are you bringing this week?"></textarea>
+  <div class="optional-label">
+    <div class="eyebrow" data-i18n="addLabelOptional">Add a label · optional</div>
+    <button class="label-clear hidden" id="clearType" data-i18n="noLabel">No label</button>
+  </div>
+  <div class="types" id="typeBtns"></div>
+  <div class="modal-actions">
+    <button class="pill" id="cancelEntry" data-i18n="cancel">Cancel</button>
+    <button class="primary" id="saveEntry" data-i18n="bringIt">Bring it</button>
+  </div>
+  <div class="status" id="entryStatus"></div>
+</div></div></div>
 
 <div class="overlay" id="newSpaceModal"><div class="modal"><div class="eyebrow" data-i18n="space">Space</div><h2 data-i18n="newSpace">New space</h2><div class="field"><label data-i18n="spaceName">Space name</label><input id="newSpaceName"></div><div class="modal-actions"><button class="pill" id="cancelSpace" data-i18n="cancel">Cancel</button><button class="primary" id="createSpaceBtn" data-i18n="create">Create</button></div></div></div>
 
@@ -429,11 +521,41 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 <script src="./config.js"></script>
 <script>
 const copy={
-en:{private:"Private space",transferOwnership:"Transfer ownership",transferOwnershipTitle:"Choose a new owner",transferOwnershipBody:"You’ll stay in this space as a regular member.",ownerMustTransfer:"Transfer ownership before leaving this space.",ownedSpacesBlockDelete:"You still own spaces with other members. Transfer ownership before deleting your account.",unread:"Unread",all:"All",edit:"Edit",editEntry:"Edit entry",editEntryTitle:"Update what you brought",deleteEntry:"Delete entry",saveChanges:"Save changes",deleteAccount:"Delete account",deleteAccountTitle:"Permanently delete your account?",deleteAccountBody:"Delete your Potluck data and account permanently.",deleteAccountLong:"Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",weekArchive:"Week archive",jumpWeek:"Jump to a week",archiveHelp:"Weeks with traces in this space.",thisWeekLabel:"This week",traces:"traces",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
-ko:{private:"비공개 공간",transferOwnership:"방장 위임",transferOwnershipTitle:"새 방장을 선택하세요",transferOwnershipBody:"위임 후에도 이 공간의 일반 멤버로 남습니다.",ownerMustTransfer:"이 공간을 나가려면 먼저 방장을 위임하세요.",ownedSpacesBlockDelete:"다른 멤버가 있는 공간의 방장입니다. 계정을 삭제하기 전에 방장을 위임하세요.",unread:"읽지 않음",all:"전체",edit:"수정",editEntry:"기록 수정",editEntryTitle:"가져온 기록 수정하기",deleteEntry:"기록 삭제",saveChanges:"변경 저장",deleteAccount:"계정 삭제",deleteAccountTitle:"계정을 영구 삭제할까요?",deleteAccountBody:"Potluck의 내 데이터와 계정을 영구 삭제합니다.",deleteAccountLong:"내 기록, 답글, 멤버십, 알림, 내가 만든 공간, 프로필과 로그인 계정이 모두 영구 삭제됩니다.",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",weekArchive:"주간 아카이브",jumpWeek:"주차 이동",archiveHelp:"이 공간에 기록이 있는 주만 보여요.",thisWeekLabel:"이번 주",traces:"개 기록",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
+en:{private:"Private space",bringTable:"Bring something to the table.",anythingWorth:"Anything from your week is worth bringing.",entryPhV16:"What are you bringing this week?",addLabelOptional:"Add a label · optional",noLabel:"No label",bringIt:"Bring it",onboardTitleV16:"Bring something to the table.",onboardBodyV16:"Anything from your week is worth bringing. Add a label if it helps — or just leave it as it is.",firstBringV16:"Bring something",displayName:"Display name",displayNameHelp:"This is the name people in your spaces will see.",handleOptional:"Handle · optional",handleHelp:"A short name people can recognize you by. You can leave this blank.",avatar:"Avatar",emailPrivate:"Only you can see your sign-in email.",makeHome:"Make yourself at home.",setupIdentityBody:"Choose how your friends will see you. Your email stays private.",whatCallYou:"What should we call you?",pickAvatar:"Pick something that feels like you.",continue:"Continue",profileSaved:"Profile saved.",personSubV16:"Everything they brought this week, in the order it arrived.",transferOwnership:"Transfer ownership",transferOwnershipTitle:"Choose a new owner",transferOwnershipBody:"You’ll stay in this space as a regular member.",ownerMustTransfer:"Transfer ownership before leaving this space.",ownedSpacesBlockDelete:"You still own spaces with other members. Transfer ownership before deleting your account.",unread:"Unread",all:"All",edit:"Edit",editEntry:"Edit entry",editEntryTitle:"Update what you brought",deleteEntry:"Delete entry",saveChanges:"Save changes",deleteAccount:"Delete account",deleteAccountTitle:"Permanently delete your account?",deleteAccountBody:"Delete your Potluck data and account permanently.",deleteAccountLong:"Your entries, replies, memberships, notifications, spaces you own, profile, and login account will be permanently deleted.",yourSpaces:"Spaces",spacesSub:"Choose a space to see what your friends brought this week.",allSpaces:"← All spaces",ourWeek:"Our week",weekSub:"A quick look at what everyone brought this week.",weekArchive:"Week archive",jumpWeek:"Jump to a week",archiveHelp:"Weeks with traces in this space.",thisWeekLabel:"This week",traces:"traces",backWeek:"← Our week",thisWeek:"This week",personSub:"Their week, grouped by what they made, learned, thought about, or got stuck on.",backPerson:"← Back to week",reply:"Reply",replyPh:"Write a reply…",repliesInvites:"Replies",inbox:"Inbox",inboxSub:"Replies that bring you back into a conversation.",back:"← Back",account:"Account",profile:"Your profile",name:"Name",handle:"Handle",language:"Interface language",contentLang:"Changing the interface language does not translate posts.",bring:"Bring something",whatHappened:"What happened this week?",entryPh:"Share something you made, learned, thought about, or got stuck on…",cancel:"Cancel",post:"Post",invite:"Invite people",members:"Members",rename:"Rename space",leave:"Leave space",Made:"Made",Learned:"Learned",Thought:"Thought",Stuck:"Stuck",also:"Also",newReply:"new reply",authSub:"A small private place to keep up with the people you actually care about.",email:"Email",sendLink:"Send sign-in link",privacyShort:"Your entries are visible only to members of the space where you share them.",save:"Save",signOut:"Sign out",space:"Space",newSpace:"New space",spaceName:"Space name",create:"Create",joinSpace:"Join a space",inviteCode:"Invite code",join:"Join",switchSpace:"Switch space",allSpacesMenu:"All spaces",inviteHelp:"Send this code or link to a friend.",copyLink:"Copy invite link",close:"Close",noSpaces:"No spaces yet.",noEntries:"Nothing here this week.",replied:"replied",people:"people",createSpace:"Create space",joinWithCode:"Join with code",continueGoogle:"Continue with Google",or:"or",authNote:"Google is the fastest way in. Email links are available as a backup.",firstTime:"First time here",onboardTitle:"Bring one thing from your week.",onboardBody:"potluck is a small private space for keeping up with people you care about. Add one small thing from your week, then see what everyone else brought.",madeHelp:"Something you made or worked on.",learnedHelp:"Something you figured out.",thoughtHelp:"Something that stayed on your mind.",stuckHelp:"Something you have not figured out yet.",skip:"Not now",firstBring:"Bring your first thing",emptyTitle:"Nothing is on the table yet.",emptyBody:"Bring something you made, learned, thought about, or got stuck on this week.",firstPost:"Bring your first thing",installTitle:"Keep potluck on your home screen",installBody:"Open it like an app without hunting for the link again.",install:"Install",installPotluck:"Install potluck",addHome:"Add potluck to your Home Screen",iosInstallIntro:"On iPhone, Safari handles installation.",iosStep1:"1. Open potluck in Safari.",iosStep2:"2. Tap the Share button.",iosStep3:"3. Choose “Add to Home Screen,” then confirm."},
+ko:{private:"비공개 공간",bringTable:"Bring something to the table.",anythingWorth:"이번 주의 어떤 것이든 가져올 가치가 있어요.",entryPhV16:"이번 주에 무엇을 가져올래요?",addLabelOptional:"라벨 추가 · 선택",noLabel:"라벨 없음",bringIt:"Bring it",onboardTitleV16:"Bring something to the table.",onboardBodyV16:"이번 주의 어떤 것이든 가져올 가치가 있어요. 정리가 도움이 되면 라벨을 붙이고, 아니면 그냥 남겨도 돼요.",firstBringV16:"무언가 가져오기",displayName:"표시 이름",displayNameHelp:"같은 공간의 사람들이 보게 될 이름이에요.",handleOptional:"핸들 · 선택",handleHelp:"친구들이 알아볼 수 있는 짧은 이름이에요. 비워둬도 돼요.",avatar:"아바타",emailPrivate:"로그인 이메일은 나에게만 보여요.",makeHome:"편하게 자리 잡아요.",setupIdentityBody:"친구들에게 어떻게 보일지 정해요. 이메일은 공개되지 않아요.",whatCallYou:"뭐라고 부르면 될까요?",pickAvatar:"나와 어울리는 걸 골라요.",continue:"계속",profileSaved:"프로필을 저장했어요.",personSubV16:"이번 주에 가져온 것들을 시간순으로 보여줘요.",transferOwnership:"방장 위임",transferOwnershipTitle:"새 방장을 선택하세요",transferOwnershipBody:"위임 후에도 이 공간의 일반 멤버로 남습니다.",ownerMustTransfer:"이 공간을 나가려면 먼저 방장을 위임하세요.",ownedSpacesBlockDelete:"다른 멤버가 있는 공간의 방장입니다. 계정을 삭제하기 전에 방장을 위임하세요.",unread:"읽지 않음",all:"전체",edit:"수정",editEntry:"기록 수정",editEntryTitle:"가져온 기록 수정하기",deleteEntry:"기록 삭제",saveChanges:"변경 저장",deleteAccount:"계정 삭제",deleteAccountTitle:"계정을 영구 삭제할까요?",deleteAccountBody:"Potluck의 내 데이터와 계정을 영구 삭제합니다.",deleteAccountLong:"내 기록, 답글, 멤버십, 알림, 내가 만든 공간, 프로필과 로그인 계정이 모두 영구 삭제됩니다.",yourSpaces:"공간",spacesSub:"이번 주 친구들이 남긴 기록을 볼 공간을 선택하세요.",allSpaces:"← 모든 공간",ourWeek:"이번 주",weekSub:"이번 주에 각자 남긴 기록을 한눈에 확인하세요.",weekArchive:"주간 아카이브",jumpWeek:"주차 이동",archiveHelp:"이 공간에 기록이 있는 주만 보여요.",thisWeekLabel:"이번 주",traces:"개 기록",backWeek:"← 이번 주",thisWeek:"이번 주",personSub:"만든 것, 배운 것, 생각한 것, 막힌 것을 모아봤어요.",backPerson:"← 목록으로",reply:"답글",replyPh:"답글을 남겨보세요…",repliesInvites:"답글",inbox:"받은 소식",inboxSub:"내 기록에 이어진 답글을 모아볼 수 있어요.",back:"← 돌아가기",account:"계정",profile:"프로필",name:"이름",handle:"아이디",language:"화면 언어",contentLang:"화면 언어를 변경해도 작성한 기록은 번역되지 않습니다.",bring:"기록 남기기",whatHappened:"이번 주에 어떤 일이 있었나요?",entryPh:"만든 것, 배운 것, 생각한 것, 막힌 것 중 하나를 남겨보세요…",cancel:"취소",post:"올리기",invite:"사람 초대",members:"멤버",rename:"공간 이름 바꾸기",leave:"공간 나가기",Made:"만든 것",Learned:"배운 것",Thought:"생각한 것",Stuck:"막힌 것",also:"또",newReply:"새 답글",authSub:"가까운 사람들과 이번 주의 기록을 나누는 작은 비공개 공간입니다.",email:"이메일",sendLink:"로그인 링크 보내기",privacyShort:"기록은 공유한 공간의 멤버에게만 공개됩니다.",save:"저장",signOut:"로그아웃",space:"공간",newSpace:"새 공간",spaceName:"공간 이름",create:"만들기",joinSpace:"공간 참여",inviteCode:"초대 코드",join:"참여하기",switchSpace:"공간 전환",allSpacesMenu:"모든 공간",inviteHelp:"친구에게 아래 코드나 링크를 보내세요.",copyLink:"초대 링크 복사",close:"닫기",noSpaces:"아직 참여한 공간이 없습니다.",noEntries:"이번 주에는 아직 기록이 없습니다.",replied:"님이 답글을 남겼습니다",people:"명",createSpace:"공간 만들기",joinWithCode:"초대 코드로 참여"}};
 const types=["Made","Learned","Thought","Stuck"];
-let lang="en", client=null, user=null, profile=null, spaces=[], currentSpace=null,currentPerson=null,currentEntry=null,lastMain="spaces",selectedType="Thought",selectedWeekStart=null;
+const avatars=["🌱","🐸","🐟","☕️","🍎","🌞","🪩","🥐","🌷","🧃","🫧","🪴"];
+const avatarColors=["#E9E4D8","#DDE8D8","#E8DCDD","#DCE4EC","#EEE4C9","#E3DDED"];
+let lang="en", client=null, user=null, profile=null, spaces=[], currentSpace=null,currentPerson=null,currentEntry=null,lastMain="spaces",selectedType=null,selectedWeekStart=null,selectedAvatar="🌱",selectedAvatarColor="#E9E4D8";
 const $=s=>document.querySelector(s); const t=k=>copy[lang][k]||k;
+
+function avatarStyle(color){return `background:${color||"#E9E4D8"}`}
+function avatarHTML(p,size=""){
+  const emoji=p?.avatar_emoji||"🌱",color=p?.avatar_color||"#E9E4D8";
+  return `<span class="avatar ${size}" style="${avatarStyle(color)}">${esc(emoji)}</span>`
+}
+function renderAvatarControls(prefix,emoji=selectedAvatar,color=selectedAvatarColor){
+  const picker=$("#"+prefix+"AvatarPicker"),colors=$("#"+prefix+"AvatarColorPicker");
+  if(!picker||!colors)return;
+  picker.innerHTML=avatars.map(a=>`<button type="button" class="avatar-option ${a===emoji?"active":""}" data-avatar="${a}" style="${avatarStyle(color)}">${a}</button>`).join("");
+  colors.innerHTML=avatarColors.map(c=>`<button type="button" class="avatar-color ${c===color?"active":""}" data-avatar-color="${c}" style="background:${c}" aria-label="Avatar color"></button>`).join("");
+  picker.querySelectorAll("[data-avatar]").forEach(b=>b.onclick=()=>{
+    selectedAvatar=b.dataset.avatar;renderAvatarControls("profile",selectedAvatar,selectedAvatarColor);renderAvatarControls("setup",selectedAvatar,selectedAvatarColor);updateProfilePreview()
+  });
+  colors.querySelectorAll("[data-avatar-color]").forEach(b=>b.onclick=()=>{
+    selectedAvatarColor=b.dataset.avatarColor;renderAvatarControls("profile",selectedAvatar,selectedAvatarColor);renderAvatarControls("setup",selectedAvatar,selectedAvatarColor);updateProfilePreview()
+  });
+}
+function updateProfilePreview(){
+  if($("#profileAvatarPreview")){$("#profileAvatarPreview").textContent=selectedAvatar;$("#profileAvatarPreview").style.background=selectedAvatarColor}
+  if($("#profileDisplayPreview"))$("#profileDisplayPreview").textContent=$("#nameInput")?.value.trim()||profile?.display_name||"Member";
+}
+function paintTopAvatar(){
+  if(!$("#profileBtn"))return;
+  $("#profileBtn").textContent=profile?.avatar_emoji||"🌱";
+  $("#profileBtn").style.background=profile?.avatar_color||"#E9E4D8";
+}
+
 function configured(){return window.POTLUCK_CONFIG&&POTLUCK_CONFIG.supabaseUrl&&!POTLUCK_CONFIG.supabaseUrl.includes("YOUR_")&&POTLUCK_CONFIG.supabaseKey&&!POTLUCK_CONFIG.supabaseKey.includes("YOUR_")}
 let restoringRoute=false;
 function routeFor(id){
@@ -466,7 +588,7 @@ function show(id,{route=true,replace=false}={}){
 }
 function applyLang(){document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));$("#onboardBack").onclick=()=>show("spaces");
 $("#skipOnboard").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week")};
-$("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week");renderTypes();$("#capture").classList.add("show")};
+$("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week");selectedType=null;renderTypes();$("#capture").classList.add("show")};
 document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));if(user){renderSpaces();if(currentSpace&&$("#week").classList.contains("active"))renderWeek();if(currentPerson&&$("#person").classList.contains("active"))renderPerson()}}
 function startOfWeek(d=new Date()){
   const x=new Date(d);const day=(x.getDay()+6)%7;
@@ -541,7 +663,10 @@ async function boot(){
  if(user)await afterLogin();else show("auth")
 }
 async function afterLogin(){
- await ensureProfile(); lang=profile?.interface_language||"en";applyLang();$("#profileBtn").textContent=(profile?.display_name||user.email||"U")[0].toUpperCase();await loadSpaces();await refreshUnread();const pendingJoin=new URL(location.href).searchParams.get("join");if(pendingJoin){await handleJoinLink()}else{await restoreLastRoute()}
+ await ensureProfile();lang=profile?.interface_language||"en";applyLang();paintTopAvatar();await loadSpaces();await refreshUnread();
+ if(!profile?.profile_completed){show("profileSetup",{route:false});return}
+ const pendingJoin=new URL(location.href).searchParams.get("join");
+ if(pendingJoin){await handleJoinLink()}else{await restoreLastRoute()}
 }
 
 async function restoreRoute(r){
@@ -584,8 +709,20 @@ async function restoreLastRoute(){
 
 async function ensureProfile(){
  let {data}=await client.from("profiles").select("*").eq("id",user.id).maybeSingle();
- if(!data){await client.from("profiles").insert({id:user.id,display_name:user.email.split("@")[0],handle:null});({data}=await client.from("profiles").select("*").eq("id",user.id).single())}
- profile=data;$("#nameInput").value=profile.display_name||"";$("#handleInput").value=profile.handle||""
+ if(!data){
+   await client.from("profiles").insert({id:user.id,display_name:null,handle:null,avatar_emoji:"🌱",avatar_color:"#E9E4D8",profile_completed:false});
+   ({data}=await client.from("profiles").select("*").eq("id",user.id).single())
+ }
+ profile=data;
+ selectedAvatar=profile?.avatar_emoji||"🌱";
+ selectedAvatarColor=profile?.avatar_color||"#E9E4D8";
+ $("#nameInput").value=profile?.display_name||"";
+ $("#handleInput").value=profile?.handle||"";
+ $("#privateEmail").textContent=user?.email||"";
+ $("#setupNameInput").value=profile?.display_name||"";
+ renderAvatarControls("profile",selectedAvatar,selectedAvatarColor);
+ renderAvatarControls("setup",selectedAvatar,selectedAvatarColor);
+ updateProfilePreview();
 }
 async function loadSpaces(){
  const {data,error}=await client.from("space_members").select("space_id,role,spaces(id,name,invite_code,owner_id,created_at)").eq("user_id",user.id);
@@ -614,43 +751,31 @@ window.openSpace=async id=>{
 async function renderWeek(){
  updateWeekChrome();
  const start=weekStart().toISOString(),end=weekEnd().toISOString();
- const {data:members}=await client.from("space_members").select("user_id,profiles(id,display_name,handle)").eq("space_id",currentSpace.id);
+ const {data:members}=await client.from("space_members").select("user_id,profiles(id,display_name,handle,avatar_emoji,avatar_color)").eq("space_id",currentSpace.id);
  const {data:entries}=await client.from("entries").select("id,author_id,type,body,created_at,replies(count)").eq("space_id",currentSpace.id).gte("created_at",start).lt("created_at",end).order("created_at",{ascending:false});
- const weeklyEntries=entries||[];
- const people=members||[];
- $("#weekGrid").classList.remove("one-person","two-people");
- if(people.length===1)$("#weekGrid").classList.add("one-person");
- if(people.length===2)$("#weekGrid").classList.add("two-people");
-
+ const weeklyEntries=entries||[],people=members||[];
+ $("#weekGrid").classList.remove("one-person","two-people");if(people.length===1)$("#weekGrid").classList.add("one-person");if(people.length===2)$("#weekGrid").classList.add("two-people");
  if(!weeklyEntries.length){
-   $("#weekGrid").innerHTML=`<div class="empty-space"><div class="eyebrow">${t("ourWeek")}</div><h3>${t("emptyTitle")}</h3><p>${t("emptyBody")}</p><button class="primary first-cta" id="emptyBring">${t("firstPost")}</button></div>`;
-   $("#emptyBring").onclick=()=>{renderTypes();$("#capture").classList.add("show")};
-   return;
+   $("#weekGrid").innerHTML=`<div class="empty-space"><div class="eyebrow">${t("ourWeek")}</div><h3>${t("emptyTitle")}</h3><p>${t("emptyBody")}</p>${isThisWeek()?`<button class="primary first-cta" id="emptyBring">${t("firstBringV16")}</button>`:""}</div>`;
+   if($("#emptyBring"))$("#emptyBring").onclick=()=>{selectedType=null;renderTypes();$("#capture").classList.add("show")};return;
  }
-
  $("#weekGrid").innerHTML=people.map(m=>{
-   const p=m.profiles;
-   const mine=weeklyEntries.filter(x=>x.author_id===m.user_id);
-   if(!mine.length){
-     return `<button class="person" onclick="openPerson('${m.user_id}')"><div class="person-name">${esc(p?.display_name||"Member")}</div><div class="muted">${t("noEntries")}</div></button>`;
-   }
-
-   const byType=types.map(type=>mine.find(x=>x.type===type)).filter(Boolean);
-   const previews=byType.slice(0,4).map(e=>{
-     const replyCount=e?.replies?.[0]?.count||0;
-     return `<div class="preview-item"><div class="trace-type">${t(e.type)}</div><div class="trace">${esc(e.body)}</div>${replyCount?`<div class="trace-foot">${replyCount} ${t("newReply")}</div>`:""}</div>`;
-   }).join("");
-
-   return `<button class="person" onclick="openPerson('${m.user_id}')"><div class="person-name">${esc(p?.display_name||"Member")}</div><div class="person-previews">${previews}</div></button>`;
+   const p=m.profiles,mine=weeklyEntries.filter(x=>x.author_id===m.user_id);
+   const identity=`<div style="display:flex;align-items:center;gap:10px">${avatarHTML(p,"sm")}<div class="person-name">${esc(p?.display_name||"Member")}</div></div>`;
+   if(!mine.length)return `<button class="person" onclick="openPerson('${m.user_id}')">${identity}<div class="muted">${t("noEntries")}</div></button>`;
+   const previews=mine.slice(0,4).map(e=>{const rc=e?.replies?.[0]?.count||0;return `<div class="preview-item">${e.type?`<div class="trace-type">${t(e.type)}</div>`:""}<div class="trace">${esc(e.body)}</div>${rc?`<div class="trace-foot">${rc} ${t("newReply")}</div>`:""}</div>`}).join("");
+   return `<button class="person" onclick="openPerson('${m.user_id}')">${identity}<div class="person-previews">${previews}</div></button>`
  }).join("");
 }
 window.openPerson=async uid=>{currentPerson=uid;await renderPerson();show("person")}
 async function renderPerson(){
  updateWeekChrome();
  const start=weekStart().toISOString(),end=weekEnd().toISOString();
- const {data:p}=await client.from("profiles").select("id,display_name,handle").eq("id",currentPerson).single();$("#personName").textContent=p.display_name||"Member";
- const {data:entries}=await client.from("entries").select("id,type,body,created_at,replies(count)").eq("space_id",currentSpace.id).eq("author_id",currentPerson).gte("created_at",start).lt("created_at",end).order("created_at");
- $("#categories").innerHTML=types.map(type=>{const arr=(entries||[]).filter(e=>e.type===type);return `<section class="category"><div><div class="eyebrow">${t(type)}</div><div class="small">${arr.length||""}</div></div><div>${arr.length?arr.map(e=>`<button class="row" onclick="openEntry('${e.id}')">${esc(e.body)}<div class="rowmeta">${e.replies?.[0]?.count?`${e.replies[0].count} ${t("newReply")}`:""}</div></button>`).join(""):`<div class="muted">${t("noEntries")}</div>`}</div></section>`}).join("")
+ const {data:p}=await client.from("profiles").select("id,display_name,handle,avatar_emoji,avatar_color").eq("id",currentPerson).single();
+ $("#personName").textContent=p?.display_name||"Member";$("#personAvatar").textContent=p?.avatar_emoji||"🌱";$("#personAvatar").style.background=p?.avatar_color||"#E9E4D8";
+ const {data:entries}=await client.from("entries").select("id,type,body,created_at,replies(count)").eq("space_id",currentSpace.id).eq("author_id",currentPerson).gte("created_at",start).lt("created_at",end).order("created_at",{ascending:false});
+ const arr=entries||[];
+ $("#categories").innerHTML=arr.length?`<div class="entry-stream">${arr.map(e=>{const c=e.replies?.[0]?.count||0;return `<button class="stream-row" onclick="openEntry('${e.id}')">${e.type?`<div class="stream-label">${t(e.type)}</div>`:""}<div class="stream-body">${esc(e.body)}</div><div class="stream-meta">${new Date(e.created_at).toLocaleDateString(lang==="ko"?"ko-KR":"en-US",{month:"short",day:"numeric"})}${c?` · ${c} ${t("newReply")}`:""}</div></button>`}).join("")}</div>`:`<div class="muted">${t("noEntries")}</div>`;
 }
 window.openEntry=async(id,opts={})=>{
  const {data:e,error}=await client.from("entries").select("id,space_id,author_id,type,body,created_at,profiles:author_id(display_name)").eq("id",id).single();
@@ -816,18 +941,21 @@ window.openNotification=async(nid,sid,eid,authorId)=>{await client.from("notific
 async function refreshUnread(){const {count}=await client.from("notifications").select("*",{count:"exact",head:true}).eq("user_id",user.id).is("read_at",null);$("#badge").textContent=count||0;$("#badge").classList.toggle("hidden",!count)}
 async function createSpace(){const name=$("#newSpaceName").value.trim();if(!name)return;const {data,error}=await client.rpc("create_space",{p_name:name});if(error){alert(error.message);return}$("#newSpaceModal").classList.remove("show");$("#newSpaceName").value="";await loadSpaces();if(data)await openSpace(data)}
 async function joinSpace(){const code=$("#joinCode").value.trim();if(!code)return;const {data,error}=await client.rpc("join_space_by_code",{p_code:code});if(error){alert(error.message);return}$("#joinSpaceModal").classList.remove("show");$("#joinCode").value="";await loadSpaces();if(data)await openSpace(data)}
-async function saveProfile(){const name=$("#nameInput").value.trim(),handle=$("#handleInput").value.trim()||null;const {error}=await client.from("profiles").update({display_name:name,handle}).eq("id",user.id);if(error){alert(error.message);return}profile={...profile,display_name:name,handle};$("#profileBtn").textContent=(name||"U")[0].toUpperCase()}
-async function signInGoogle(){
-  $("#authStatus").textContent="";
-  const redirectTo=window.location.origin+window.location.pathname+window.location.search;
-  const {error}=await client.auth.signInWithOAuth({
-    provider:"google",
-    options:{redirectTo}
-  });
-  if(error){
-    $("#authStatus").textContent=error.message;
-    $("#authStatus").className="status error";
-  }
+async function saveProfile(){
+ const name=$("#nameInput").value.trim(),handle=$("#handleInput").value.trim().replace(/^@/,"")||null;
+ if(!name){$("#profileSaveStatus").textContent=lang==="ko"?"표시 이름을 입력해줘.":"Add a display name.";$("#profileSaveStatus").className="status error";return}
+ const {error}=await client.from("profiles").update({display_name:name,handle,avatar_emoji:selectedAvatar,avatar_color:selectedAvatarColor,profile_completed:true}).eq("id",user.id);
+ if(error){$("#profileSaveStatus").textContent=error.message;$("#profileSaveStatus").className="status error";return}
+ profile={...profile,display_name:name,handle,avatar_emoji:selectedAvatar,avatar_color:selectedAvatarColor,profile_completed:true};
+ paintTopAvatar();updateProfilePreview();$("#profileSaveStatus").textContent=t("profileSaved");$("#profileSaveStatus").className="status success";
+}
+async function finishProfileSetup(){
+ const name=$("#setupNameInput").value.trim();
+ if(!name){$("#profileSetupStatus").textContent=lang==="ko"?"이름 하나만 정해줘.":"Choose a display name.";$("#profileSetupStatus").className="status error";return}
+ const {error}=await client.from("profiles").update({display_name:name,avatar_emoji:selectedAvatar,avatar_color:selectedAvatarColor,profile_completed:true}).eq("id",user.id);
+ if(error){$("#profileSetupStatus").textContent=error.message;$("#profileSetupStatus").className="status error";return}
+ profile={...profile,display_name:name,avatar_emoji:selectedAvatar,avatar_color:selectedAvatarColor,profile_completed:true};
+ $("#nameInput").value=name;paintTopAvatar();renderSpaces();show("spaces",{replace:true});
 }
 
 async function sendMagic(){
@@ -867,9 +995,9 @@ async function sendMagic(){
     }
   },1000);
 }
-async function addEntry(){const body=$("#entryText").value.trim();if(!body)return;const {error}=await client.from("entries").insert({space_id:currentSpace.id,author_id:user.id,type:selectedType,body});if(error){alert(error.message);return}$("#capture").classList.remove("show");$("#entryText").value="";await loadSpaces();currentSpace=spaces.find(s=>s.id===currentSpace.id);await renderWeek()}
+async function addEntry(){const body=$("#entryText").value.trim();if(!body)return;$("#entryStatus").textContent="";const {error}=await client.from("entries").insert({space_id:currentSpace.id,author_id:user.id,type:selectedType||null,body});if(error){$("#entryStatus").textContent=error.message;$("#entryStatus").className="status error";return}$("#capture").classList.remove("show");$("#entryText").value="";selectedType=null;await loadSpaces();currentSpace=spaces.find(s=>s.id===currentSpace.id);await renderWeek()}
 async function addReply(){const body=$("#replyText").value.trim();if(!body)return;const {error}=await client.from("replies").insert({entry_id:currentEntry.id,author_id:user.id,body});if(error){alert(error.message);return}$("#replyText").value="";await renderReplies()}
-function renderTypes(){$("#typeBtns").innerHTML=types.map(x=>`<button class="pill ${x===selectedType?"active":""}" onclick="pickType('${x}')">${t(x)}</button>`).join("")}window.pickType=x=>{selectedType=x;renderTypes()}
+function renderTypes(){$("#typeBtns").innerHTML=types.map(x=>`<button class="pill ${x===selectedType?"active":""}" onclick="pickType('${x}')">${t(x)}</button>`).join("");$("#clearType").classList.toggle("hidden",!selectedType)}window.pickType=x=>{selectedType=selectedType===x?null:x;renderTypes()}
 function renderSwitcher(){$("#spaceSwitchList").innerHTML=spaces.map(s=>`<button class="menu" onclick="switchSpace('${s.id}')"><span>${esc(s.name)}</span><span>${currentSpace?.id===s.id?"✓":""}</span></button>`).join("")}window.switchSpace=async id=>{$("#spaceSwitcher").classList.remove("show");await openSpace(id)}
 async function handleJoinLink(){
  const u=new URL(location.href),code=u.searchParams.get("join");
@@ -886,11 +1014,11 @@ function timeAgo(ts){const sec=(Date.now()-new Date(ts))/1000;if(sec<3600)return
 let editType=null;
 function renderEditTypes(){
   $("#editTypes").innerHTML=types.map(type=>`<button class="pill ${editType===type?"active":""}" data-edit-type="${type}">${t(type)}</button>`).join("");
-  document.querySelectorAll("[data-edit-type]").forEach(btn=>btn.onclick=()=>{editType=btn.dataset.editType;renderEditTypes()});
+  document.querySelectorAll("[data-edit-type]").forEach(btn=>btn.onclick=()=>{editType=btn.dataset.editType||null;renderEditTypes()});
 }
 function openEntryEditor(){
   if(!currentEntry||currentEntry.author_id!==user.id)return;
-  editType=currentEntry.type;
+  editType=currentEntry.type||null;
   $("#editEntryBody").value=currentEntry.body||"";
   $("#editEntryStatus").textContent="";
   renderEditTypes();
@@ -903,7 +1031,7 @@ async function saveEntryEdit(){
   if(error){$("#editEntryStatus").textContent=error.message;$("#editEntryStatus").className="status error";return}
   currentEntry={...currentEntry,...data};
   $("#detailCopy").textContent=currentEntry.body;
-  $("#detailMeta").textContent=`${profile?.display_name||"Member"} · ${t(currentEntry.type)} · ${new Date(currentEntry.created_at).toLocaleDateString()}`;
+  $("#detailMeta").textContent=`${profile?.display_name||"Member"}${currentEntry.type?` · ${t(currentEntry.type)}`:""} · ${new Date(currentEntry.created_at).toLocaleDateString()}`;
   $("#editEntryModal").classList.remove("show");
   if(currentSpace)await renderWeek();
 }
@@ -965,8 +1093,8 @@ $("#prevWeek").onclick=()=>moveWeek(-1);
 $("#nextWeek").onclick=()=>moveWeek(1);
 $("#openWeekArchive").onclick=openWeekArchive;
 $("#closeWeekArchive").onclick=()=>$("#weekArchiveModal").classList.remove("show");
-$("#weekArchiveModal").onclick=e=>{if(e.target===$("#weekArchiveModal"))$("#weekArchiveModal").classList.remove("show")};$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=openInboxDrawer;$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#saveProfile").onclick=saveProfile;$("#signOut").onclick=()=>client.auth.signOut();
-$("#add").onclick=()=>{renderTypes();$("#capture").classList.add("show")};$("#cancelEntry").onclick=()=>$("#capture").classList.remove("show");$("#saveEntry").onclick=addEntry;$("#replyBtn").onclick=addReply;
+$("#weekArchiveModal").onclick=e=>{if(e.target===$("#weekArchiveModal"))$("#weekArchiveModal").classList.remove("show")};$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=openInboxDrawer;$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#saveProfile").onclick=saveProfile;$("#finishProfileSetup").onclick=finishProfileSetup;$("#nameInput").oninput=updateProfilePreview;$("#signOut").onclick=()=>client.auth.signOut();
+$("#add").onclick=()=>{selectedType=null;renderTypes();$("#entryStatus").textContent="";$("#capture").classList.add("show")};$("#cancelEntry").onclick=()=>$("#capture").classList.remove("show");$("#clearType").onclick=()=>{selectedType=null;renderTypes()};$("#saveEntry").onclick=addEntry;$("#replyBtn").onclick=addReply;
 $("#createSpaceBtn").onclick=createSpace;$("#cancelSpace").onclick=()=>$("#newSpaceModal").classList.remove("show");$("#joinSpaceBtn").onclick=joinSpace;$("#cancelJoin").onclick=()=>$("#joinSpaceModal").classList.remove("show");
 $("#currentSpace").onclick=()=>{renderSwitcher();$("#spaceSwitcher").classList.add("show")};$("#switchAllSpaces").onclick=()=>{$("#spaceSwitcher").classList.remove("show");show("spaces")};$("#spaceSwitcher").onclick=e=>{if(e.target===$("#spaceSwitcher")[0])$("#spaceSwitcher").classList.remove("show")};
 $("#spaceMenu").onclick=()=>$("#spaceActions").classList.add("show");$("#spaceActions").onclick=e=>{if(e.target===$("#spaceActions")[0])$("#spaceActions").classList.remove("show")};
@@ -978,7 +1106,7 @@ $("#renameMenu").onclick=async()=>{if(currentSpace.owner_id!==user.id){alert(lan
 $("#leaveMenu").onclick=async()=>{if(!confirm(lang==="ko"?"이 공간에서 나갈까요?":"Leave this space?"))return;const {error}=await client.rpc("leave_space",{p_space_id:currentSpace.id});if(error){alert(error.message);return}$("#spaceActions").classList.remove("show");currentSpace=null;await loadSpaces();show("spaces")};
 $("#onboardBack").onclick=()=>show("spaces");
 $("#skipOnboard").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week")};
-$("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week");renderTypes();$("#capture").classList.add("show")};
+$("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week");selectedType=null;renderTypes();$("#capture").classList.add("show")};
 document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=async()=>{lang=b.dataset.lang;applyLang();await client.from("profiles").update({interface_language:lang}).eq("id",user.id)});
 
 
