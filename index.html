@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="potluck-version" content="1.6.1-loading-fix">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>potluck</title>
 <meta name="theme-color" content="#f7f7f4">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -222,6 +223,11 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
   .avatar-picker{grid-template-columns:repeat(4,1fr)}
   .stream-body{font-size:19px}
 }
+
+.startup-error{max-width:560px;margin:0 auto;padding:32px 0}
+.startup-error h1{font-family:Chosun,serif;font-size:38px;font-weight:400;margin:0 0 12px}
+.startup-error p{color:var(--muted);line-height:1.6}
+.startup-error pre{white-space:pre-wrap;font-size:12px;background:var(--soft);padding:14px;border:1px solid var(--line);margin-top:16px}
 </style>
 </head>
 <body>
@@ -293,6 +299,17 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
       <button class="primary" id="finishProfileSetup" data-i18n="continue">Continue</button>
       <div class="status" id="profileSetupStatus"></div>
     </div>
+  </div>
+</section>
+
+
+<section class="screen" id="startupError">
+  <div class="startup-error">
+    <div class="eyebrow">potluck</div>
+    <h1>Something got stuck.</h1>
+    <p id="startupErrorCopy">Potluck couldn't finish loading. Your data has not been deleted.</p>
+    <button class="pill" id="retryStartup">Try again</button>
+    <pre id="startupErrorDetail"></pre>
   </div>
 </section>
 
@@ -576,7 +593,7 @@ function writeRoute(id,replace=false){
 }
 function show(id,{route=true,replace=false}={}){
   document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-  $("#"+id).classList.add("active");
+  const target=$("#"+id);if(!target){console.error("Missing screen",id);return}target.classList.add("active");
   if(["spaces","week","person","detail","inbox","profile"].includes(id))lastMain=id;
   const inside=["week","person","detail"].includes(id);
   $("#currentSpace").classList.toggle("hidden",!inside);
@@ -589,7 +606,7 @@ function show(id,{route=true,replace=false}={}){
 function applyLang(){document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph));$("#onboardBack").onclick=()=>show("spaces");
 $("#skipOnboard").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week")};
 $("#firstBring").onclick=()=>{localStorage.setItem(`potluck:onboarded:${user.id}:${currentSpace.id}`,"1");show("week");selectedType=null;renderTypes();$("#capture").classList.add("show")};
-document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));if(user){renderSpaces();if(currentSpace&&$("#week").classList.contains("active"))renderWeek();if(currentPerson&&$("#person").classList.contains("active"))renderPerson()}}
+document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));if(user&&profile){if($("#spaces")?.classList.contains("active"))renderSpaces();if(currentSpace&&$("#week")?.classList.contains("active"))renderWeek();if(currentPerson&&$("#person")?.classList.contains("active"))renderPerson()}}
 function startOfWeek(d=new Date()){
   const x=new Date(d);const day=(x.getDay()+6)%7;
   x.setHours(0,0,0,0);x.setDate(x.getDate()-day);return x
@@ -657,16 +674,90 @@ async function openWeekArchive(){
 
 async function boot(){
  if(!configured()){show("setup");return}
- client=supabase.createClient(POTLUCK_CONFIG.supabaseUrl,POTLUCK_CONFIG.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
- const {data:{session}}=await client.auth.getSession(); user=session?.user||null;
- client.auth.onAuthStateChange(async(_,session)=>{user=session?.user||null;if(user)await afterLogin();else show("auth")});
- if(user)await afterLogin();else show("auth")
+
+ client=supabase.createClient(
+   POTLUCK_CONFIG.supabaseUrl,
+   POTLUCK_CONFIG.supabaseKey,
+   {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
+ );
+
+ try{
+   const {data:{session},error}=await client.auth.getSession();
+   if(error)throw error;
+   user=session?.user||null;
+
+   client.auth.onAuthStateChange((event,session)=>{
+     const nextUser=session?.user||null;
+     const changedUser=nextUser?.id!==user?.id;
+     user=nextUser;
+
+     if(!user){
+       profile=null;spaces=[];currentSpace=null;currentPerson=null;currentEntry=null;
+       show("auth",{route:false,replace:true});
+       return;
+     }
+
+     if(changedUser && event!=="INITIAL_SESSION"){
+       setTimeout(()=>afterLogin(),0);
+     }
+   });
+
+   if(user)await afterLogin();
+   else show("auth",{route:false,replace:true});
+ }catch(error){
+   console.error("Boot failed",error);
+   const detail=$("#startupErrorDetail");
+   if(detail)detail.textContent=error?.message||String(error);
+   show("startupError",{route:false,replace:true});
+ }
 }
+let loginInitPromise=null;
 async function afterLogin(){
- await ensureProfile();lang=profile?.interface_language||"en";applyLang();paintTopAvatar();await loadSpaces();await refreshUnread();
- if(!profile?.profile_completed){show("profileSetup",{route:false});return}
- const pendingJoin=new URL(location.href).searchParams.get("join");
- if(pendingJoin){await handleJoinLink()}else{await restoreLastRoute()}
+ if(loginInitPromise)return loginInitPromise;
+
+ loginInitPromise=(async()=>{
+   try{
+     await ensureProfile();
+     lang=profile?.interface_language||"en";
+     applyLang();
+     paintTopAvatar();
+
+     await loadSpaces();
+     await refreshUnread();
+
+     if(!profile?.profile_completed){
+       show("profileSetup",{route:false,replace:true});
+       return;
+     }
+
+     const pendingJoin=new URL(location.href).searchParams.get("join");
+     if(pendingJoin){
+       await handleJoinLink();
+       return;
+     }
+
+     try{
+       await restoreLastRoute();
+     }catch(routeError){
+       console.error("Route restore failed",routeError);
+       currentSpace=null;currentPerson=null;currentEntry=null;
+       show("spaces",{route:false,replace:true});
+     }
+   }catch(error){
+     console.error("Potluck startup failed",error);
+     const detail=$("#startupErrorDetail");
+     const copy=$("#startupErrorCopy");
+     if(detail)detail.textContent=error?.message||String(error);
+     if(copy)copy.textContent=lang==="ko"
+       ?"불러오는 중 오류가 났어요. 데이터가 삭제된 건 아니에요."
+       :"Potluck couldn't finish loading. Your data has not been deleted.";
+     show("startupError",{route:false,replace:true});
+   }finally{
+     loginInitPromise=null;
+   }
+ })();
+
+ return loginInitPromise;
 }
 
 async function restoreRoute(r){
@@ -708,18 +799,37 @@ async function restoreLastRoute(){
 }
 
 async function ensureProfile(){
- let {data}=await client.from("profiles").select("*").eq("id",user.id).maybeSingle();
+ const first=await client.from("profiles").select("*").eq("id",user.id).maybeSingle();
+ if(first.error)throw new Error(`Profile load failed: ${first.error.message}`);
+ let data=first.data;
+
  if(!data){
-   await client.from("profiles").insert({id:user.id,display_name:null,handle:null,avatar_emoji:"🌱",avatar_color:"#E9E4D8",profile_completed:false});
-   ({data}=await client.from("profiles").select("*").eq("id",user.id).single())
+   const fallbackName=user.user_metadata?.full_name||user.user_metadata?.name||null;
+   const created=await client.from("profiles").insert({
+     id:user.id,
+     display_name:fallbackName,
+     handle:null,
+     avatar_emoji:"🌱",
+     avatar_color:"#E9E4D8",
+     profile_completed:false
+   });
+   if(created.error)throw new Error(`Profile creation failed: ${created.error.message}`);
+
+   const second=await client.from("profiles").select("*").eq("id",user.id).single();
+   if(second.error)throw new Error(`Profile reload failed: ${second.error.message}`);
+   data=second.data;
  }
+
  profile=data;
  selectedAvatar=profile?.avatar_emoji||"🌱";
  selectedAvatarColor=profile?.avatar_color||"#E9E4D8";
- $("#nameInput").value=profile?.display_name||"";
- $("#handleInput").value=profile?.handle||"";
- $("#privateEmail").textContent=user?.email||"";
- $("#setupNameInput").value=profile?.display_name||"";
+
+ const nameInput=$("#nameInput"),handleInput=$("#handleInput"),privateEmail=$("#privateEmail"),setupName=$("#setupNameInput");
+ if(nameInput)nameInput.value=profile?.display_name||"";
+ if(handleInput)handleInput.value=profile?.handle||"";
+ if(privateEmail)privateEmail.textContent=user?.email||"";
+ if(setupName)setupName.value=profile?.display_name||"";
+
  renderAvatarControls("profile",selectedAvatar,selectedAvatarColor);
  renderAvatarControls("setup",selectedAvatar,selectedAvatarColor);
  updateProfilePreview();
@@ -739,7 +849,8 @@ async function loadSpaces(){
  renderSpaces()
 }
 function renderSpaces(){
- const cards=spaces.map((s,i)=>`<button class="space-card" onclick="openSpace('${s.id}')"><div class="space-name">${esc(s.name)}</div><div class="members">${s.member_count} ${lang==="ko"?t("people"):"people"}</div><div class="space-preview">${s.latest?esc(s.latest.body):t("noEntries")}</div><div class="space-foot"><span>${s.member_count} ${lang==="ko"?t("people"):"people"}</span><span class="${s.unread_count?"unread":""}">${s.unread_count?`${s.unread_count} ${t("newReply")}`:""}</span></div></button>`).join("");
+ if(!$("#spaceGrid"))return;
+ const cards=(spaces||[]).map((s,i)=>`<button class="space-card" onclick="openSpace('${s.id}')"><div class="space-name">${esc(s.name)}</div><div class="members">${s.member_count} ${lang==="ko"?t("people"):"people"}</div><div class="space-preview">${s.latest?esc(s.latest.body):t("noEntries")}</div><div class="space-foot"><span>${s.member_count} ${lang==="ko"?t("people"):"people"}</span><span class="${s.unread_count?"unread":""}">${s.unread_count?`${s.unread_count} ${t("newReply")}`:""}</span></div></button>`).join("");
  $("#spaceGrid").innerHTML=cards+`<button class="space-card" id="createCard"><div class="space-name">+ ${t("createSpace")}</div><div class="members">${t("createSpace")}</div></button><button class="space-card" id="joinCard"><div class="space-name">+ ${t("joinWithCode")}</div><div class="members">${t("joinSpace")}</div></button>`;
  $("#createCard").onclick=()=>$("#newSpaceModal").classList.add("show");$("#joinCard").onclick=()=>$("#joinSpaceModal").classList.add("show")
 }
@@ -1093,7 +1204,7 @@ $("#prevWeek").onclick=()=>moveWeek(-1);
 $("#nextWeek").onclick=()=>moveWeek(1);
 $("#openWeekArchive").onclick=openWeekArchive;
 $("#closeWeekArchive").onclick=()=>$("#weekArchiveModal").classList.remove("show");
-$("#weekArchiveModal").onclick=e=>{if(e.target===$("#weekArchiveModal"))$("#weekArchiveModal").classList.remove("show")};$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=openInboxDrawer;$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#saveProfile").onclick=saveProfile;$("#finishProfileSetup").onclick=finishProfileSetup;$("#nameInput").oninput=updateProfilePreview;$("#signOut").onclick=()=>client.auth.signOut();
+$("#weekArchiveModal").onclick=e=>{if(e.target===$("#weekArchiveModal"))$("#weekArchiveModal").classList.remove("show")};$("#weekBack").onclick=()=>show("week");$("#personBack").onclick=()=>show("person");$("#inboxBtn").onclick=openInboxDrawer;$("#inboxBack").onclick=()=>show(lastMain);$("#profileBtn").onclick=()=>show("profile");$("#profileBack").onclick=()=>show(lastMain);$("#retryStartup").onclick=()=>{location.reload()};$("#saveProfile").onclick=saveProfile;$("#finishProfileSetup").onclick=finishProfileSetup;$("#nameInput").oninput=updateProfilePreview;$("#signOut").onclick=()=>client.auth.signOut();
 $("#add").onclick=()=>{selectedType=null;renderTypes();$("#entryStatus").textContent="";$("#capture").classList.add("show")};$("#cancelEntry").onclick=()=>$("#capture").classList.remove("show");$("#clearType").onclick=()=>{selectedType=null;renderTypes()};$("#saveEntry").onclick=addEntry;$("#replyBtn").onclick=addReply;
 $("#createSpaceBtn").onclick=createSpace;$("#cancelSpace").onclick=()=>$("#newSpaceModal").classList.remove("show");$("#joinSpaceBtn").onclick=joinSpace;$("#cancelJoin").onclick=()=>$("#joinSpaceModal").classList.remove("show");
 $("#currentSpace").onclick=()=>{renderSwitcher();$("#spaceSwitcher").classList.add("show")};$("#switchAllSpaces").onclick=()=>{$("#spaceSwitcher").classList.remove("show");show("spaces")};$("#spaceSwitcher").onclick=e=>{if(e.target===$("#spaceSwitcher")[0])$("#spaceSwitcher").classList.remove("show")};
