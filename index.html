@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="potluck-version" content="1.6.1-loading-fix">
+<meta name="potluck-version" content="1.6.2-google-auth-runtime-fix">
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>potluck</title>
 <meta name="theme-color" content="#f7f7f4">
@@ -229,6 +229,14 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 .startup-error p{color:var(--muted);line-height:1.6}
 .startup-error pre{white-space:pre-wrap;font-size:12px;background:var(--soft);padding:14px;border:1px solid var(--line);margin-top:16px}
 </style>
+<script>
+window.addEventListener("error", function(e){
+  console.error("Potluck runtime error:", e.error || e.message);
+});
+window.addEventListener("unhandledrejection", function(e){
+  console.error("Potluck unhandled rejection:", e.reason);
+});
+</script>
 </head>
 <body>
 <div class="app">
@@ -1067,6 +1075,19 @@ async function finishProfileSetup(){
  if(error){$("#profileSetupStatus").textContent=error.message;$("#profileSetupStatus").className="status error";return}
  profile={...profile,display_name:name,avatar_emoji:selectedAvatar,avatar_color:selectedAvatarColor,profile_completed:true};
  $("#nameInput").value=name;paintTopAvatar();renderSpaces();show("spaces",{replace:true});
+}
+
+async function signInGoogle(){
+  $("#authStatus").textContent="";
+  const redirectTo=window.location.origin+window.location.pathname+window.location.search;
+  const {error}=await client.auth.signInWithOAuth({
+    provider:"google",
+    options:{redirectTo}
+  });
+  if(error){
+    $("#authStatus").textContent=error.message;
+    $("#authStatus").className="status error";
+  }
 }
 
 async function sendMagic(){
